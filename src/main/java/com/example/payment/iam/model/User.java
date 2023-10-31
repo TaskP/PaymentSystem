@@ -2,10 +2,10 @@ package com.example.payment.iam.model;
 
 import java.io.Serializable;
 
+import com.example.payment.utils.IdUtils;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -18,10 +18,9 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(unique = true)
     @NotNull
-    private Long id;
+    private Long id = IdUtils.idLong();
 
     @Column(nullable = false, unique = true, length = 255)
     @NotNull

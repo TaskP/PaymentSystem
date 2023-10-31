@@ -9,7 +9,7 @@ import com.example.payment.utils.BitUtils;
  * Predefined User Roles Using a Bitmask. Up to 64 Roles in long
  */
 public enum Role {
-    USER(0, "User"), // 1
+    // USER(0, "User"), // 1
     ADMINISTRATOR(1, "Administrator"), // 2
     MERCHANT(2, "Merchant") // 4
     ;

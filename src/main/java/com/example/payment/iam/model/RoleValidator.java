@@ -9,7 +9,7 @@ public class RoleValidator implements ConstraintValidator<RoleValidation, Long> 
 
     @Override
     public boolean isValid(final Long value, final ConstraintValidatorContext context) {
-        if (value == null) {
+        if (value == null || value == 0) {
             return false;
         }
         for (int i = 0; i < 64; i++) {
