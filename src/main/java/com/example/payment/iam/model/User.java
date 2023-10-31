@@ -36,7 +36,7 @@ public final class User implements Serializable {
     @Id
     @Column(unique = true)
     @NotNull
-    private Long id = IdUtils.idLong();
+    private Long id;
 
     /**
      * Username. The user's login name. Unique. Length must be between 1 to 255
@@ -80,7 +80,16 @@ public final class User implements Serializable {
      * Default no-arg constructor.
      */
     public User() {
+        this(IdUtils.idLong());
+    }
+
+    /**
+     *
+     * @param idIn user id to set
+     */
+    public User(final Long idIn) {
         super();
+        this.setId(idIn);
     }
 
     /**
@@ -94,8 +103,7 @@ public final class User implements Serializable {
      * @param statusIn
      */
     public User(final Long idIn, final String usernameIn, final String fullNameIn, final String passwordIn, final long roleIn, final boolean statusIn) {
-        this();
-        this.setId(idIn);
+        this(idIn);
         this.setUsername(usernameIn);
         this.setFullName(fullNameIn);
         this.setPassword(passwordIn);

@@ -14,18 +14,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
 
 /**
  * RESTful controller responsible for managing user-related operations through
- * HTTP endpoints in the application's REST API.
+ * HTTP end points.
  */
 
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping("/api/user")
+public class UserRESTController {
 
     /**
      * Active/Current UserService.
@@ -67,15 +68,19 @@ public class UserController {
 
     /**
      * Updates a user. Method: HTTP POST. On success returns an HTTP 201 (Created)
-     * status code.
+     * status code. On error returns HTTP 404 Not found
      *
      * @param user
      * @return update User
      */
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PutMapping
-    public User update(@RequestBody final User user) throws Exception {
-        return userService.update(user);
+    public User update(@RequestBody final User user) {
+        try {
+            return userService.update(user);
+        } catch (final Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
     }
 
     /**

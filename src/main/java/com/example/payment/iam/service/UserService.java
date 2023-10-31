@@ -31,9 +31,50 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     /**
+     * Strip user password.
+     *
+     * @param user
+     * @return user
+     */
+    protected User formatOut(final User user) {
+        if (user != null) {
+            user.setPassword(null);
+        }
+        return user;
+    }
+
+    /**
+     * Strip user password.
+     *
+     * @param user optional
+     * @return Optional<User>
+     */
+    protected Optional<User> formatOut(final Optional<User> user) {
+        if (user != null && user.isPresent()) {
+            formatOut(user.get());
+        }
+        return user;
+    }
+
+    /**
+     * Strip user password.
+     *
+     * @param users list
+     * @return List<User>
+     */
+    protected List<User> formatOut(final List<User> users) {
+        if (users != null && !users.isEmpty()) {
+            for (final User user : users) {
+                formatOut(user);
+            }
+        }
+        return users;
+    }
+
+    /**
      * List all users.
      *
-     * @return List with all users
+     * @return List<User> with all users
      */
     public List<User> findAll() {
         return userRepository.findAll();
@@ -46,7 +87,7 @@ public class UserService {
      * @return Optional<User>
      */
     public Optional<User> findById(final Long id) {
-        return userRepository.findById(id);
+        return formatOut(userRepository.findById(id));
     }
 
     /**
@@ -59,12 +100,13 @@ public class UserService {
         if (passwordEncoder != null && user.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        return userRepository.save(user);
+        return formatOut(userRepository.save(user));
     }
 
     /**
-     * Updates a user. If there is a difference between current and new passwords
-     * and PasswordEncoder is set then new password is hashed
+     * Updates a user. If new password is null or empty use current. If there is a
+     * difference between current and new passwords and PasswordEncoder is set then
+     * new password is hashed
      *
      * @param user
      * @return persisted user
@@ -75,10 +117,15 @@ public class UserService {
         if (!ex.isPresent()) {
             throw new Exception("User not found! Id:" + user.getId());
         }
-        if (passwordEncoder != null && ex.get().getPassword() != null && !user.getPassword().equals(user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            user.setPassword(ex.get().getPassword());
         }
-        return userRepository.save(user);
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            if (passwordEncoder != null && !user.getPassword().equals(ex.get().getPassword())) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+        }
+        return formatOut(userRepository.save(user));
     }
 
     /**
@@ -87,6 +134,7 @@ public class UserService {
      * @param id
      */
     public void deleteById(final Long id) {
+        System.out.println("[deleteById] id:" + id);
         userRepository.deleteById(id);
     }
 
@@ -97,6 +145,6 @@ public class UserService {
      * @return Optional<User>
      */
     public Optional<User> findByUsername(final String username) {
-        return userRepository.findByUsername(username);
+        return formatOut(userRepository.findByUsername(username));
     }
 }

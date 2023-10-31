@@ -23,8 +23,8 @@ import com.example.payment.utils.IdUtils;
  * UserService test cases.
  */
 
-@SpringBootTest
-class UserServiceTests {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class TestUserService {
 
     /**
      * UserService under test.
