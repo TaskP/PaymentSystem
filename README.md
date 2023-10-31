@@ -3,6 +3,7 @@
 - [Technical requirements](#technical-requirements)
 - [Payment System Task](#payment-system-task)
 - [Task submission](#task-submission)
+- [Linter](#linter)
 - [Getting Started](#getting-started)
 
 ## Technical requirements
@@ -74,6 +75,13 @@
 2. If for some reason you can't provide a GitHub/Bitbucket/GitLab repo, please, at least include the .git folder.
 3. Document your code where needed and add a short README.
 
+## Linter
+[Checkstyle](https://checkstyle.org) is used as a linting tool.  
+- Configuration is ```config/checkstyle/checkstyle.xml``` based on https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/sun_checks.xml with modified LineLength to 160 instead of 80.  
+- Suppressions are ```config/checkstyle/suppressions.xml```  
+- ```./gradlew checkStyleMain``` checks main  
+- ```./gradlew checkStyleTest``` checks test    
+
 ## Getting Started
 
 ### Running the project locally
@@ -101,10 +109,8 @@
     or create and run docker container
     ```
     docker run --name dbserver -p 3306:3306 -e MYSQL_USER=TaskPUsr -e MYSQL_PASSWORD=TaskPDhLtp -e MYSQL_ROOT_PASSWORD=rPwd931 -e MYSQL_DATABASE=TaskPDB -d mysql:8.2
-    ```
-    
-    
-    2.1.3. Set server IP instead of 192.168.122.1, DB name,Username, and password in application.properties and in application-cli.properties
+    ```   
+    2.1.2. Set server IP instead of 192.168.122.1, DB name,Username, and password in application.properties and in application-cli.properties
     ```
     spring.datasource.username=TaskPUsr
     spring.datasource.password=TaskPDhLtp
@@ -122,4 +128,6 @@
     java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.main.cli.user.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
     ```
         
+
+
     

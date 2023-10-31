@@ -1,3 +1,5 @@
+*.class
+.svn/
 HELP.md
 .gradle
 build/
