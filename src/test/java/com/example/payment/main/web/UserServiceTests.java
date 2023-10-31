@@ -19,12 +19,22 @@ import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
 import com.example.payment.utils.IdUtils;
 
+/**
+ * UserService test cases.
+ */
+
 @SpringBootTest
 class UserServiceTests {
 
+    /**
+     * UserService under test.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * Test create. Happy path.
+     */
     @Test
     void testCreateHappy() {
         final long id = IdUtils.idLong();
@@ -44,6 +54,9 @@ class UserServiceTests {
         assertFalse(optUser.isPresent(), "Delete failed");
     }
 
+    /**
+     * Test create negative. Role validator throws invalid Role.
+     */
     @Test
     void testCreateNegativeRole() {
         final long id = IdUtils.idLong();

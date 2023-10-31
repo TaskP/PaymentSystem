@@ -13,11 +13,19 @@ import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.repository.UserRepository;
 
+/**
+ * Service implementation responsible for loading user details during
+ * authentication in Spring Security.
+ *
+ */
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public final class UserDetailsServiceImpl implements UserDetailsService {
 
+    /**
+     * User repository.
+     */
     @Autowired
-    UserRepository userRepo;
+    private UserRepository userRepo;
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
@@ -25,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (!user.isPresent()) {
             throw new UsernameNotFoundException("User (" + username + ") does not exist");
         }
-        if (!user.get().isStatus()) {
+        if (!user.get().getStatus()) {
             throw new UsernameNotFoundException("User (" + username + ") is not active");
         }
         if (user.get().getPassword() == null || user.get().getPassword().isEmpty()) {

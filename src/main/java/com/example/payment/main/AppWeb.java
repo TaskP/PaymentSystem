@@ -1,4 +1,4 @@
-package com.example.payment.main.web;
+package com.example.payment.main;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,9 +7,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-/*
- * The @SpringBootApplication is @Configuration, @EnableAutoConfiguration, and @ComponentScan
- * @ComponentScan looks for @Configuration and @Component classes within the same package and all sub-packages hence cli and web must be in different packages
+/**
+ * Web Application Main.
+ *
  */
 @EntityScan(basePackages = { "com.example.payment.iam.model" })
 @ComponentScan(basePackages = { "com.example.payment.iam" })
@@ -17,7 +17,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @Profile("default") // Execute when 'default' profile is active
 public class AppWeb {
-
+    /**
+     * Main.
+     *
+     * @param args
+     */
     public static void main(final String[] args) {
         SpringApplication.run(AppWeb.class, args);
     }

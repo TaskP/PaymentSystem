@@ -2,45 +2,45 @@ package com.example.payment.utils;
 
 /**
  *
- * Collection of static methods for bit manipulation
+ * Collection of static methods for bit manipulation.
  *
  */
-public class BitUtils {
+public final class BitUtils {
 
     private BitUtils() {
         super();
     }
 
     /**
-     * Checks if bit on position is set
+     * Checks if bit on position is set.
      *
      * @param position
-     * @param l
-     * @return
+     * @param value
+     * @return true if bit at position is set
      */
-    public static boolean isSet(final int position, final long l) {
-        return (l & (1L << position)) == (1L << position);
+    public static boolean isSet(final int position, final long value) {
+        return (value & (1L << position)) == (1L << position);
     }
 
     /**
-     * Sets bit on position
+     * Sets bit on position.
      *
      * @param position
-     * @param l
-     * @return
+     * @param value
+     * @return value with set bit at position
      */
-    public static long setBit(final int position, final long l) {
-        return (l | (1L << position));
+    public static long setBit(final int position, final long value) {
+        return (value | (1L << position));
     }
 
     /**
-     * Clears bit on position
+     * Clears bit on position.
      *
      * @param position
-     * @param l
-     * @return
+     * @param value
+     * @return value with cleared bit at position
      */
-    public static long clearBit(final int position, final long l) {
-        return (l & ~(1L << position));
+    public static long clearBit(final int position, final long value) {
+        return (value & ~(1L << position));
     }
 }

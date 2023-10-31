@@ -10,7 +10,7 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 /**
- * Role validation annotation
+ * Role validation annotation.
  */
 @Constraint(validatedBy = { RoleValidator.class })
 @Target(value = { ElementType.METHOD, ElementType.FIELD })
@@ -18,11 +18,33 @@ import jakarta.validation.Payload;
 @Documented
 public @interface RoleValidation {
 
-    public boolean allowsNull() default false;
+    /**
+     *
+     * @return whether the role can be null. Default value is false.
+     */
+    boolean allowsNull() default false;
 
-    public String message() default "Invalid Role";
+    /**
+     *
+     * @return Message that will be set in Validation exception if Role is not valid
+     */
+    String message() default "Invalid Role";
 
-    public Class<?>[] groups() default {};
+    /**
+     * Constraints may be added to one or more groups. Constraint groups are used to
+     * create subsets of constraints so that only certain constraints will be
+     * validated for a particular object. By default, all constraints are included
+     * in the Default constraint group.
+     *
+     * @return constraint groups
+     */
+    Class<?>[] groups() default {};
 
-    public Class<? extends Payload>[] payload() default {};
+    /**
+     * Payload type that can be attached to a constraint declaration.
+     *
+     * @return Payload types
+     */
+    Class<? extends Payload>[] payload() default {};
+
 }

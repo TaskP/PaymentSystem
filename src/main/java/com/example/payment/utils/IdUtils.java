@@ -3,29 +3,42 @@ package com.example.payment.utils;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *
- * Collection of static methods for id generation
+ * Collection of static methods for id generation.
  *
  */
-public class IdUtils {
-
-    // Shift epoch closer to January 1, 1970 UTC in order to have some more space
-    // for long time based ids
-    private static final long epoch = 1698709109194L;
-
-    private static final AtomicInteger counter = new AtomicInteger((int) (System.currentTimeMillis() / 1000));
+public final class IdUtils {
 
     private IdUtils() {
         super();
     }
 
     /**
-     * Generates id based on time stamp plus consecutive counter [0-1000)
-     * Uniqueness: up to 1000 ids per millisecond. Total 1M per second.
+     * Epoch Shift in order to have some more space for long time based ids.
      *
-     * @return
+     */
+    private static final long EPOCH = 1698709109194L;
+
+    /**
+     * Level of uniqueness. How many consecutive requests per millisecond will
+     * be unique.
+     */
+    private static final int GRANULARITY = 1000;
+
+    /**
+     * Sequential thread-safe counter of generated id.
+     */
+    private static final AtomicInteger COUNTER = new AtomicInteger(
+            (int) (((System.currentTimeMillis() - EPOCH) / GRANULARITY)
+                    % GRANULARITY));
+
+    /**
+     * Generates id based on time stamp plus consecutive counter. Uniqueness: up
+     * to value set in {@link IdUtils#GRANULARITY} per millisecond.
+     *
+     * @return generated long id
      */
     public static long idLong() {
-        return (System.currentTimeMillis() - epoch) * 1000 + (counter.incrementAndGet() / 1000);
+        return (System.currentTimeMillis() - EPOCH) * GRANULARITY
+                + (COUNTER.incrementAndGet() % GRANULARITY);
     }
 }
