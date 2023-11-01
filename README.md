@@ -135,7 +135,10 @@
     spring.datasource.url=jdbc:postgresql://192.168.122.1:5432/taskpdb
     ```
 3. Load initial data  
-    3.1. Load users from data/users.csv
+    3.1. Load users from data/users.csv  
+	Format: Column 1 - Username, Column 2 - Full name, Column 3 - Password, Column 4 - Role, Column 5 (Optional) - Status  
+	Status of newly imported users is active unless there is Column 5 with case insensitive "false" or "inactive"  
+ 
     ```
     ./gradlew userImport -PCSVFile=data/users.csv
     ```

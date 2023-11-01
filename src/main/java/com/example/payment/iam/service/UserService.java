@@ -134,7 +134,6 @@ public class UserService {
      * @param id
      */
     public void deleteById(final Long id) {
-        System.out.println("[deleteById] id:" + id);
         userRepository.deleteById(id);
     }
 

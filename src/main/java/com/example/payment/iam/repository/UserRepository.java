@@ -9,8 +9,8 @@ import com.example.payment.iam.model.User;
 
 /**
  * The UserRepository interface extends the Spring Data JPA JpaRepository,
- * providing user-related data access and management methods. Inherits CRUD
- * (Create, Read, Update, Delete) operations for user entities
+ * providing data access and management methods. Inherits CRUD (Create, Read,
+ * Update, Delete) operations for User entity
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

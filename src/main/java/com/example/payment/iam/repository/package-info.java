@@ -1,5 +1,5 @@
 /**
- * Classes responsible for data access of IAM entities.
+ * Classes responsible for data access of merchant entities.
  *
  * @since 1.0
  * @version 1.0

@@ -18,9 +18,10 @@ import com.example.payment.iam.service.UserService;
  * Import new users from CSV File.
  *
  * Format: Column 1 - Username, Column 2 - Full name, Column 3 - Password,
- * Column 4 - Role
+ * Column 4 - Role, Column 5 (Optional) - Status
  *
- * Status of newly imported users is active
+ * Status of newly imported users is active unless there is Column 5 with case
+ * insensitive "false" or "inactive"
  *
  * Profile setting spring.profiles.active=cli is required
  */
@@ -63,12 +64,11 @@ public class AppCliUserImport extends Importer implements CommandLineRunner {
         final int ixFullName = 1;
         final int ixPassword = 2;
         final int ixRole = 3;
-        final int ixLenght = 4;
-
+        final int ixStatus = 4;
         int r = 0;
         for (final String[] row : csvList) {
             r++;
-            if (row == null || row.length != ixLenght) {
+            if (row == null || row.length <= ixRole) {
                 throw new IllegalArgumentException("Error: 2010 - Invalid argument! Invalid data on row " + r);
             }
             final User user = new User();
@@ -76,6 +76,11 @@ public class AppCliUserImport extends Importer implements CommandLineRunner {
             user.setUsername(row[ixUsername]);
             user.setFullName(row[ixFullName]);
             user.setPassword(row[ixPassword]);
+            if (row.length > ixStatus) {
+                if ("false".equalsIgnoreCase(row[ixStatus]) || "inactive".equalsIgnoreCase(row[ixStatus])) {
+                    user.setStatus(false);
+                }
+            }
             try {
                 user.setRole(Long.parseLong(row[ixRole]));
             } catch (final NumberFormatException e) {
