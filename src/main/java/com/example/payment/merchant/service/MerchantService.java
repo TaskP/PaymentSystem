@@ -24,16 +24,16 @@ public class MerchantService {
     private MerchantRepository merchantRepository;
 
     /**
-     * List all merchants.
+     * List all Merchants.
      *
-     * @return List<Merchant> with all merchants
+     * @return List<Merchant> with all Merchants
      */
     public List<Merchant> findAll() {
         return merchantRepository.findAll();
     }
 
     /**
-     * Get merchant by merchant id.
+     * Get Merchant by Merchant ID.
      *
      * @param id
      * @return Optional<Merchant>
@@ -43,17 +43,17 @@ public class MerchantService {
     }
 
     /**
-     * Persists a merchant.
+     * Persists a Merchant.
      *
      * @param merchant
-     * @return persisted merchant
+     * @return persisted Merchant
      */
     public Merchant save(@Valid final Merchant merchant) {
         return merchantRepository.save(merchant);
     }
 
     /**
-     * Deletes merchant by merchant id.
+     * Deletes Merchant by Merchant ID.
      *
      * @param id
      */
@@ -62,12 +62,12 @@ public class MerchantService {
     }
 
     /**
-     * Get merchant by name.
+     * Get Merchant by name.
      *
      * @param name
      * @return Optional<Merchant>
      */
-    public Optional<Merchant> findByMerchantname(final String name) {
+    public Optional<Merchant> findByName(final String name) {
         return merchantRepository.findByName(name);
     }
 }

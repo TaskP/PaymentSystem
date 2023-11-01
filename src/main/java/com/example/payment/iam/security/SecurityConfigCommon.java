@@ -1,4 +1,4 @@
-package com.example.payment.iam.config;
+package com.example.payment.iam.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

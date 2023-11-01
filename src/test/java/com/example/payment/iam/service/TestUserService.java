@@ -1,4 +1,4 @@
-package com.example.payment.main.web;
+package com.example.payment.iam.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,14 +16,12 @@ import org.springframework.transaction.TransactionSystemException;
 
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
-import com.example.payment.iam.service.UserService;
 import com.example.payment.utils.IdUtils;
 
 /**
  * UserService test cases.
  */
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = com.example.payment.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class TestUserService {
 
     /**

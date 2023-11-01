@@ -1,4 +1,4 @@
-package com.example.payment.iam.config;
+package com.example.payment.iam.security;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 

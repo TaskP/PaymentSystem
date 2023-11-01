@@ -1,5 +1,7 @@
 package com.example.payment.merchant.model;
 
+import java.io.Serializable;
+
 import com.example.payment.utils.IdUtils;
 
 import jakarta.persistence.Column;
@@ -15,9 +17,12 @@ import jakarta.validation.constraints.Size;
  */
 @Entity
 @Table(name = "merchant")
-public class Merchant {
+public final class Merchant implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
-     * User ID. A unique identifier for each merchant in the system.
+     * Merchant ID. A unique identifier for each merchant in the system.
      */
     @Id
     @Column(unique = true)
@@ -167,4 +172,10 @@ public class Merchant {
     public void setStatus(final boolean statusIn) {
         this.status = statusIn;
     }
+
+    @Override
+    public String toString() {
+        return "Merchant [id=" + id + ", name=" + name + ", description=" + description + ", email=" + email + ", status=" + status + "]";
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.example.payment.main.web;
+package com.example.payment.iam.controller;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -18,7 +18,7 @@ import com.example.payment.iam.model.Role;
 /**
  * UserRESTController test cases.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = com.example.payment.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 class TestUserRESTController {
 

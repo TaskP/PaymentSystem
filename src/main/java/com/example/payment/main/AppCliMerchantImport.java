@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.service.MerchantService;
@@ -25,9 +23,7 @@ import com.example.payment.merchant.service.MerchantService;
  *
  * Profile setting spring.profiles.active=cli is required
  */
-@EntityScan(basePackages = { "com.example.payment.merchant.model" })
-@ComponentScan(basePackages = { "com.example.payment.merchant" })
-@EnableJpaRepositories(basePackages = { "com.example.payment.merchant.repository" })
+@ComponentScan(basePackages = { "com.example.payment.merchant.config" })
 @SpringBootApplication
 @Profile("cli")
 public class AppCliMerchantImport extends Importer implements CommandLineRunner {

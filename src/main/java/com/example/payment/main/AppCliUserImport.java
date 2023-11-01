@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
@@ -25,9 +23,7 @@ import com.example.payment.iam.service.UserService;
  *
  * Profile setting spring.profiles.active=cli is required
  */
-@EntityScan(basePackages = { "com.example.payment.iam.model" })
-@ComponentScan(basePackages = { "com.example.payment.iam" })
-@EnableJpaRepositories(basePackages = { "com.example.payment.iam.repository" })
+@ComponentScan(basePackages = { "com.example.payment.iam.config" })
 @SpringBootApplication
 @Profile("cli")
 public class AppCliUserImport extends Importer implements CommandLineRunner {
