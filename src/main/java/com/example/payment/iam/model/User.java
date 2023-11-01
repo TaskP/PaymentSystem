@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size;
 /*
  * The User class represents a user in the system.
  *
- * <p>Key attributes:
  * <ul>
  *   <li>User ID: A unique identifier for each user in the system.</li>
  *   <li>Username: The user's login name. Mandatory and unique. Length must be between 1 to 255</li>
@@ -24,7 +23,7 @@ import jakarta.validation.constraints.Size;
  *   <li>Status: active/inactive (true/false).</li>
  * </ul>
  *
- * Persistence table is users since in PostgreSQL word user is reserved.
+ * Persistence table is users, in plural since in PostgreSQL word user is reserved.
  */
 @Entity
 @Table(name = "users")
@@ -41,7 +40,7 @@ public final class User implements Serializable {
     private Long id;
 
     /**
-     * Username. The user's login name. Unique. Length must be between 1 to 255
+     * Username. The user's login name. Unique. Max length is 255
      */
     @Column(nullable = false, unique = true, length = 255)
     @NotNull
@@ -49,10 +48,10 @@ public final class User implements Serializable {
     private String username;
 
     /**
-     * Full Name: Full name of user. Length must be between 0 to 255.
+     * Full Name: Full name of user. Max length is 255.
      */
     @Column(nullable = true, length = 255)
-    @Size(max = 255, message = "Invalid FullName, Length must be between 0 to 255")
+    @Size(max = 255, message = "Invalid FullName, Length must not be grater than 255")
     private String fullName;
 
     /**
@@ -61,7 +60,7 @@ public final class User implements Serializable {
      * default is 64-bytes (512-bits)
      */
     @Column(nullable = true, length = 128)
-    @Size(max = 128, message = "Invalid Password, Length should not be grater than 128")
+    @Size(max = 128, message = "Invalid Password, Length must not be grater than 128")
     private String password;
 
     /**
