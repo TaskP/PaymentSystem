@@ -144,7 +144,18 @@
     ```
     or
     ```
-    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.main.cli.user.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
+    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.main.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
+    ```
+    3.2. Load merchants from data/merchants.csv  
+	Format: Column 1 - Name, Column 2 - Description, Column 3 - Email, Column 4 (Optional) - Status  
+	Status of newly imported merchants is active unless there is Column 4 with case insensitive "false" or "inactive"  
+ 
+    ```
+    ./gradlew merchantImport -PCSVFile=data/merchants.csv
+    ```
+    or
+    ```
+    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.main.AppCliMerchantImport org.springframework.boot.loader.PropertiesLauncher data/merchants.csv
     ```
     
         

@@ -86,3 +86,19 @@ task userImport(type: JavaExec){
 		args project.getProperty("CSVFile")
 	}
 }
+
+task merchantImport(type: JavaExec){
+	group = "Application"  
+	description = "Import merchants from CSV file. Expects CSVFile as an argument. Example: ./gradlew merchantImport -PCSVFile=data/merchants.csv"  
+	systemProperty 'spring.profiles.active', 'cli'
+	mainClass = "com.example.payment.main.AppCliMerchantImport"
+	classpath = sourceSets.main.runtimeClasspath
+	if (project.hasProperty("CSVFile")) {
+		args project.getProperty("CSVFile")
+	}
+}
+
+
+//EOF
+
+
