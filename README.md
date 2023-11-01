@@ -101,23 +101,39 @@
     2.1.1. Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
     Connect to a running server with a user that has grant privileges and execute
     ```
-    CREATE DATABASE TaskPDB;
-    CREATE USER 'TaskPUsr'@'%' IDENTIFIED BY 'TaskPDhLtp';
-    GRANT ALL PRIVILEGES ON TaskPDB.* TO 'TaskPUsr'@'%';
+    CREATE DATABASE taskpdb;
+    CREATE USER 'taskpusr'@'%' IDENTIFIED BY 'task!@#';
+    GRANT ALL PRIVILEGES ON taskpdb.* TO 'taskpusr'@'%';
     FLUSH PRIVILEGES;
     ```  
     or create and run docker container
     ```
-    docker run --name dbserver -p 3306:3306 -e MYSQL_USER=TaskPUsr -e MYSQL_PASSWORD=TaskPDhLtp -e MYSQL_ROOT_PASSWORD=rPwd931 -e MYSQL_DATABASE=TaskPDB -d mysql:8.2
+    docker run --name mysql -p 3306:3306 -e MYSQL_USER=taskpusr -e MYSQL_PASSWORD='task!@#' -e MYSQL_ROOT_PASSWORD=rPwd931 -e MYSQL_DATABASE=taskpdb -d mysql:8.2
     ```   
     2.1.2. Set server IP instead of 192.168.122.1, DB name,Username, and password in application.properties and in application-cli.properties
     ```
-    spring.datasource.username=TaskPUsr
-    spring.datasource.password=TaskPDhLtp
-    spring.datasource.url=jdbc:mysql://192.168.122.1:3306/TaskPDB
+    spring.datasource.username=taskpusr
+    spring.datasource.password=task!@#
+    spring.datasource.url=jdbc:mysql://192.168.122.1:3306/taskpdb
     ```
-    2.2. PostgreSQL - TODO
-
+    2.2. PostgreSQL  
+    2.2.1. Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
+    Connect to a running server with a user that has SUPERUSER role and execute
+    ```
+    CREATE DATABASE taskpdb;
+    CREATE USER taskpusr WITH PASSWORD 'task!@#' NOCREATEDB LOGIN;
+    ALTER DATABASE taskpdb OWNER TO taskpusr;
+    ```  
+    or create and run docker container
+    ```
+	docker run --name postgres -p 5432:5432 -e POSTGRES_USER=taskpusr -e POSTGRES_PASSWORD='task!@#' -e POSTGRES_DB=taskpdb -d postgres:16.0
+    ```   
+    2.2.2. Set server IP instead of 192.168.122.1, DB name,Username, and password in application.properties and in application-cli.properties
+    ```
+    spring.datasource.username=taskpusr
+    spring.datasource.password=task!@#
+    spring.datasource.url=jdbc:postgresql://192.168.122.1:5432/taskpdb
+    ```
 3. Load initial data  
     3.1. Load users from data/users.csv
     ```
@@ -127,6 +143,7 @@
     ```
     java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.main.cli.user.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
     ```
+    
         
 
 

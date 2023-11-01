@@ -23,9 +23,11 @@ import jakarta.validation.constraints.Size;
  *   <li>Roles: Bitmask with user's roles</li>
  *   <li>Status: active/inactive (true/false).</li>
  * </ul>
+ *
+ * Persistence table is users since in PostgreSQL word user is reserved.
  */
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public final class User implements Serializable {
 
     private static final long serialVersionUID = 1L;

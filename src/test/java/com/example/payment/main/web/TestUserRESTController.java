@@ -29,7 +29,7 @@ class TestUserRESTController {
     private MockMvc mvc;
 
     /**
-     * Test list users
+     * Test list users.
      *
      * @throws Exception
      */
