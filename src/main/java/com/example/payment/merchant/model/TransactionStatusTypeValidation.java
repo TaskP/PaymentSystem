@@ -1,4 +1,4 @@
-package com.example.payment.iam.model;
+package com.example.payment.merchant.model;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -12,17 +12,17 @@ import jakarta.validation.Payload;
 /**
  * Role validation annotation.
  */
-@Constraint(validatedBy = { RoleValidator.class })
+@Constraint(validatedBy = { TransactionStatusTypeValidator.class })
 @Target(value = { ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RoleValidation {
+public @interface TransactionStatusTypeValidation {
 
     /**
      *
-     * @return Message that will be set in Validation exception if Role is not valid
+     * @return Message that will be set in Validation exception if not valid
      */
-    String message() default "Invalid Role";
+    String message() default "Invalid Transaction Status";
 
     /**
      * Constraints may be added to one or more groups. Constraint groups are used to

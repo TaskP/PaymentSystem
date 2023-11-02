@@ -46,12 +46,17 @@ dependencies {
 	runtimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+
 tasks.named("bootJar") {
-	mainClass = 'com.example.payment.main.AppWeb'
+	mainClass = 'com.example.payment.app.main.AppWeb'
 }
 
 tasks.named("bootRun") {
-	mainClass = 'com.example.payment.main.AppWeb'
+	mainClass = 'com.example.payment.app.main.AppWeb'
+}
+tasks.named("bootTestRun") {
+	//TODO
+	mainClass = 'com.example.payment.app.main.AppInfo'
 }
 
 checkstyle {
@@ -75,11 +80,18 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+task appInfo(type: JavaExec){
+	group = "Application"  
+	description = "Print system information"  
+	mainClass = 'com.example.payment.app.main.AppInfo'
+	classpath = sourceSets.main.runtimeClasspath
+}
+
 task userImport(type: JavaExec){
 	group = "Application"  
 	description = "Import new users from CSV file. Expects CSVFile as an argument. Example: ./gradlew userImport -PCSVFile=data/users.csv"  
 	systemProperty 'spring.profiles.active', 'cli'
-	mainClass = "com.example.payment.main.AppCliUserImport"
+	mainClass = "com.example.payment.app.AppCliUserImport"
 	classpath = sourceSets.main.runtimeClasspath
 	if (project.hasProperty("CSVFile")) {
 		args project.getProperty("CSVFile")
@@ -90,7 +102,7 @@ task merchantImport(type: JavaExec){
 	group = "Application"  
 	description = "Import merchants from CSV file. Expects CSVFile as an argument. Example: ./gradlew merchantImport -PCSVFile=data/merchants.csv"  
 	systemProperty 'spring.profiles.active', 'cli'
-	mainClass = "com.example.payment.main.AppCliMerchantImport"
+	mainClass = "com.example.payment.app.AppCliMerchantImport"
 	classpath = sourceSets.main.runtimeClasspath
 	if (project.hasProperty("CSVFile")) {
 		args project.getProperty("CSVFile")

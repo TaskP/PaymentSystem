@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.example.payment.utils.BitUtils;
+import com.example.payment.common.BitUtils;
 
 /**
  * Roles as a bitmask. Supports to 64 Roles in long.

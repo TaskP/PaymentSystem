@@ -19,6 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
+
 /**
  * RESTful controller responsible for managing user-related operations through
  * HTTP end points.
@@ -55,7 +58,7 @@ public class UserRESTController {
 
     /**
      * Creates a user. Method: HTTP POST. On success returns an HTTP 201 (Created)
-     * status code.
+     * status code. On duplicate user error returns HTTP 409 Conflict
      *
      * @param user
      * @return newly created User
@@ -63,12 +66,17 @@ public class UserRESTController {
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PostMapping
     public User create(@RequestBody final User user) {
-        return userService.create(user);
+        try {
+            return userService.create(user);
+        } catch (final EntityExistsException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }
+
     }
 
     /**
      * Updates a user. Method: HTTP POST. On success returns an HTTP 201 (Created)
-     * status code. On error returns HTTP 404 Not found
+     * status code. On user not found error returns HTTP 404 Not found.
      *
      * @param user
      * @return update User
@@ -78,8 +86,8 @@ public class UserRESTController {
     public User update(@RequestBody final User user) {
         try {
             return userService.update(user);
-        } catch (final Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        } catch (final EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
 

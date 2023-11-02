@@ -1,4 +1,4 @@
-package com.example.payment.main;
+package com.example.payment.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
 
 /**
- * Web Application Main.
+ * Application Main.
  *
  */
 @ComponentScan(basePackages = { "com.example.payment.iam.config", "com.example.payment.merchant.config" })
@@ -21,5 +21,4 @@ public class AppWeb {
     public static void main(final String[] args) {
         SpringApplication.run(AppWeb.class, args);
     }
-
 }

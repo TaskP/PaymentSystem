@@ -75,24 +75,23 @@ public final class MerchantUser implements Serializable {
      * Populates MerchantUserKey with respective ids.
      */
     protected void updateId() {
-        synchronized (this) {
-            if (id == null) {
-                id = new MerchantUserKey();
-            }
-            final Merchant lMerchant = this.getMerchant();
-            final User lUser = this.getUser();
-            if (lMerchant != null) {
-                id.setMerchantId(lMerchant.getId());
-            } else {
-                id.setMerchantId(null);
-            }
-            if (lUser != null) {
-                id.setUserId(lUser.getId());
-            } else {
-                id.setUserId(null);
-            }
+        MerchantUserKey nId = getId();
+        if (nId == null) {
+            nId = new MerchantUserKey();
         }
-
+        final Merchant lMerchant = this.getMerchant();
+        final User lUser = this.getUser();
+        if (lMerchant != null) {
+            nId.setMerchantId(lMerchant.getId());
+        } else {
+            nId.setMerchantId(0);
+        }
+        if (lUser != null) {
+            nId.setUserId(lUser.getId());
+        } else {
+            nId.setUserId(0);
+        }
+        setId(nId);
     }
 
     /**

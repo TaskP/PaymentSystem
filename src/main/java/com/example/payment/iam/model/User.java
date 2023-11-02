@@ -2,7 +2,7 @@ package com.example.payment.iam.model;
 
 import java.io.Serializable;
 
-import com.example.payment.utils.IdUtils;
+import com.example.payment.common.IdUtils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,9 +35,7 @@ public final class User implements Serializable {
      * User ID. A unique identifier for each user in the system.
      */
     @Id
-    @Column(unique = true)
-    @NotNull
-    private Long id;
+    private long id;
 
     /**
      * Username. The user's login name. Unique. Max length is 255
@@ -88,7 +86,7 @@ public final class User implements Serializable {
      *
      * @param idIn user id to set
      */
-    public User(final Long idIn) {
+    public User(final long idIn) {
         super();
         this.setId(idIn);
     }
@@ -103,7 +101,7 @@ public final class User implements Serializable {
      * @param roleIn
      * @param statusIn
      */
-    public User(final Long idIn, final String usernameIn, final String fullNameIn, final String passwordIn, final long roleIn, final boolean statusIn) {
+    public User(final long idIn, final String usernameIn, final String fullNameIn, final String passwordIn, final long roleIn, final boolean statusIn) {
         this(idIn);
         this.setUsername(usernameIn);
         this.setFullName(fullNameIn);
@@ -115,14 +113,14 @@ public final class User implements Serializable {
     /**
      * @return current user Id
      */
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
     /**
      * @param idIn user id to set
      */
-    public void setId(final Long idIn) {
+    public void setId(final long idIn) {
         this.id = idIn;
     }
 
@@ -186,6 +184,14 @@ public final class User implements Serializable {
      */
     public void setRole(final long roleIn) {
         this.role = roleIn;
+    }
+
+    /**
+     *
+     * @param roleIn
+     */
+    public void setRole(final Role roleIn) {
+        setRole(roleIn == null ? 0 : roleIn.getBitPosition());
     }
 
     /**

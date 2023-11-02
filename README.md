@@ -1,12 +1,18 @@
 ## Table of Contents
-
-- [Technical requirements](#technical-requirements)
 - [Payment System Task](#payment-system-task)
-- [Task submission](#task-submission)
+    * [Technical requirements](#technical-requirements)
+    * [Task](#task)
+    * [Submission](#submission)
+- [Implementation](#implementation)    
+    * [Structure](#structure)
+    * [Configuration](#configuration)
+    * [Testing](#testing)
 - [Linter](#linter)
 - [Getting Started](#getting-started)
 
-## Technical requirements
+## Payment System Task
+
+### Technical requirements
 
 1. Use Spring MVC / Hibernate ORM / MySQL / PostgreSQL
 2. Frontend Framework
@@ -31,7 +37,7 @@
     * Use application and database containers
     * Use Docker compose - https://docs.docker.com/compose
 
-## Payment System Task
+### Task
 
 1. Relations:  
     1.1. Ensure you have merchant and admin user roles (UI)  
@@ -66,7 +72,7 @@
     4.1. Display, edit, destroy merchants  
     4.2. Display transactions  
 
-# Task submission
+### Submission
 
 1. Add the task to a GitHub/Bitbucket/GitLab repo - either a public or a private one. Organize the Git commits the following way:  
     1.1. Initial commit with all changes not directly related to the task - the newly installed Spring app, .gitignore file, etc.  
@@ -75,12 +81,31 @@
 2. If for some reason you can't provide a GitHub/Bitbucket/GitLab repo, please, at least include the .git folder.
 3. Document your code where needed and add a short README.
 
+## Implementation
+Spring Boot Application with Hibernate JPA. Supports MySQL and PostgreSQL as a database. Build environment is Gradle with Groovy.
+
+### Structure
+  * Four major loosely coupled packages  
+    * ```app``` - Application entry points. All classes that have main method are located here  
+    * ```common``` - Contains utilities, and helper classes that are commonly used across the application. Does not import/refer to any of the other packages  
+    * ```iam``` - Identity and Access Management (IAM). Implements role-based user access. Imports/refers only to ```common``` package  
+    * ```merchant``` - All merchant specific functionalities are implemented here. Imports/refers to ```common``` and  to ```iam``` (to implement Merchant->User relation)
+  * All application logic is in ```iam``` and ```merchant``` packages with similar structure  
+    * ```config``` - Spring Boot Configurations. Sets locations for entity, component, and repository relevant to package  
+    * ```controller``` - handles and routes incoming HTTP requests    
+    * ```model``` - entities and data structures  
+    * ```repository``` - data access of entities
+    * ```security``` - only in ```iam```. Contains configuration and setup of PasswordEncoder and SecurityConfig
+    * ```service``` - encapsulates the business logic  
+### Testing
+Tests are located in the ```test``` directory with package definitions matching those of the classes under test. There are two types of tests ```Happy``` and ```Negative``` and are separated in different testing classes.  
+
 ## Linter
-[Checkstyle](https://checkstyle.org) is used as a linting tool.  
+[Checkstyle](https://checkstyle.org) is configured and used as a linting tool.  
 - Configuration is ```config/checkstyle/checkstyle.xml``` based on https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/sun_checks.xml with modified LineLength to 160 instead of 80.  
 - Suppressions are ```config/checkstyle/suppressions.xml```  
-- ```./gradlew checkStyleMain``` checks main  
-- ```./gradlew checkStyleTest``` checks test    
+- ```./gradlew checkStyleMain``` runs checks in main  
+- ```./gradlew checkStyleTest``` runs checks in test    
 
 ## Getting Started
 
@@ -144,7 +169,7 @@
     ```
     or
     ```
-    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.main.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
+    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
     ```
     3.2. Load merchants from data/merchants.csv  
 	Format: Column 1 - Name, Column 2 - Description, Column 3 - Email, Column 4 (Optional) - Status  
@@ -155,7 +180,7 @@
     ```
     or
     ```
-    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.main.AppCliMerchantImport org.springframework.boot.loader.PropertiesLauncher data/merchants.csv
+    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.AppCliMerchantImport org.springframework.boot.loader.PropertiesLauncher data/merchants.csv
     ```
     
         

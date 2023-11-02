@@ -1,4 +1,4 @@
-package com.example.payment.main;
+package com.example.payment.app;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
 
+import com.example.payment.common.Importer;
 import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.service.MerchantService;
 
@@ -23,7 +24,7 @@ import com.example.payment.merchant.service.MerchantService;
  *
  * Profile setting spring.profiles.active=cli is required
  */
-@ComponentScan(basePackages = { "com.example.payment.merchant.config" })
+@ComponentScan(basePackages = { "com.example.payment.iam.config", "com.example.payment.merchant.config" })
 @SpringBootApplication
 @Profile("cli")
 public class AppCliMerchantImport extends Importer implements CommandLineRunner {

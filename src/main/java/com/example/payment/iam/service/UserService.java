@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.repository.UserRepository;
 
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 
 /**
@@ -86,7 +88,7 @@ public class UserService {
      * @param id
      * @return Optional<User>
      */
-    public Optional<User> findById(final Long id) {
+    public Optional<User> findById(final long id) {
         return formatOut(userRepository.findById(id));
     }
 
@@ -96,7 +98,11 @@ public class UserService {
      * @param user
      * @return persisted user
      */
-    public User create(@Valid final User user) {
+    public User create(@Valid final User user) throws EntityExistsException {
+        final Optional<User> ex = findById(user.getId());
+        if (ex.isPresent()) {
+            throw new EntityExistsException("User exists! Id:" + user.getId());
+        }
         if (passwordEncoder != null && user.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
@@ -112,10 +118,10 @@ public class UserService {
      * @return persisted user
      * @throws Exception
      */
-    public User update(@Valid final User user) throws Exception {
+    public User update(@Valid final User user) throws EntityNotFoundException {
         final Optional<User> ex = findById(user.getId());
         if (!ex.isPresent()) {
-            throw new Exception("User not found! Id:" + user.getId());
+            throw new EntityNotFoundException("User not found! Id:" + user.getId());
         }
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(ex.get().getPassword());
@@ -133,7 +139,7 @@ public class UserService {
      *
      * @param id
      */
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         userRepository.deleteById(id);
     }
 

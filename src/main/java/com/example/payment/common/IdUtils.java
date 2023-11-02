@@ -1,4 +1,4 @@
-package com.example.payment.utils;
+package com.example.payment.common;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

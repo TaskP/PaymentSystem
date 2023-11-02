@@ -1,6 +1,5 @@
 package com.example.payment.merchant.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,68 +11,80 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.example.payment.common.IdUtils;
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
 import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.model.MerchantUser;
-import com.example.payment.utils.IdUtils;
 
 /**
- * MerchantService test cases.
+ * MerchantUserService test cases. Happy path.
  */
-@SpringBootTest(classes = com.example.payment.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-class TestMerchantUserService {
+@SpringBootTest(classes = com.example.payment.app.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+class TestMerchantUserServiceHappy {
 
     /**
-     * MerchantService under test.
+     * MerchantUserService under test.
      */
     @Autowired
     private MerchantUserService merchantUserService;
 
     /**
-     * MerchantService under test.
+     * MerchantService.
      */
     @Autowired
     private MerchantService merchantService;
 
     /**
-     * MerchantService under test.
+     * UserService.
      */
     @Autowired
     private UserService userService;
 
     /**
-     * Test create. Happy path.
+     * Test create.
+     *
+     * Steps:
+     *
+     * 1. Creates a Merchant
+     *
+     * 2. Creates a User
+     *
+     * 3. Creates MerchantUser
+     *
+     * 4. Fetches MerchantUser by Merchant Id and User Id
+     *
+     * 5. Lists MerchantUser by Merchant Id
+     *
+     * 6. Lists MerchantUser by User Id
+     *
+     * 7. Deletes MerchantUser
+     *
+     * 8. Deletes Merchant
+     *
+     * 9. Deletes User
      */
     @Test
-    void testCreateHappy() {
-        final long merchantId = IdUtils.idLong();
-        final String name = "testCreateHappy-" + merchantId;
+    void testCreate() {
+        final long runId = IdUtils.idLong();
+        final String clazzName = getClass().getSimpleName();
+        final String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        final String email = methodName + "-" + runId + "@" + clazzName + ".test";
+
+        final long merchantId = runId;
+        final String testName = clazzName + "-" + runId;
 
         // Create Merchant
-        Merchant merchant = new Merchant(merchantId, name, name + " Description", "example@example.com", true);
+        Merchant merchant = new Merchant(merchantId, testName, testName + " Description", email, true);
         merchant = this.merchantService.save(merchant);
-        Optional<Merchant> optMerchant = this.merchantService.findById(merchantId);
-        assertTrue(optMerchant.isPresent(), "Merchant findById failed");
-        assertThat(optMerchant.get().getName()).isEqualTo(name);
-
-        optMerchant = this.merchantService.findByName(name);
-        assertTrue(optMerchant.isPresent(), "Merchant findByName failed");
-        assertThat(optMerchant.get().getName()).isEqualTo(name);
 
         // Create User
-        final String username = name;
+        final String username = testName;
         final long userId = merchantId + 1;
         User user = new User(userId, username, username + " Lastname", "pass-" + userId, Role.ADMINISTRATOR.getValue(), true);
         user = this.userService.create(user);
-        Optional<User> optUser = this.userService.findById(userId);
-        assertTrue(optUser.isPresent(), "User findById failed");
-        assertThat(optUser.get().getUsername()).isEqualTo(username);
-
-        optUser = this.userService.findByUsername(username);
-        assertTrue(optUser.isPresent(), "User findByUsername failed");
-        assertThat(optUser.get().getUsername()).isEqualTo(username);
 
         // Create MerchantUser
         final MerchantUser merchantUser = new MerchantUser(merchant, user);
@@ -82,12 +93,12 @@ class TestMerchantUserService {
         assertTrue(optMerchantUser.isPresent(), "MerchantUser findById failed");
 
         List<MerchantUser> listMerchantUser = this.merchantUserService.findByMerchantId(merchantId);
-        assertNotNull(listMerchantUser);
-        assertTrue(listMerchantUser.size() == 1);
+        assertNotNull(listMerchantUser, "List failed #1");
+        assertTrue(listMerchantUser.size() == 1, "List failed #2");
 
         listMerchantUser = this.merchantUserService.findByUserId(userId);
-        assertNotNull(listMerchantUser);
-        assertTrue(listMerchantUser.size() == 1);
+        assertNotNull(listMerchantUser, "List failed #6");
+        assertTrue(listMerchantUser.size() == 1, "List failed #7");
 
         // Delete MerchantUser
         this.merchantUserService.deleteById(merchantId, userId);
@@ -96,13 +107,9 @@ class TestMerchantUserService {
 
         // Delete Merchant
         this.merchantService.deleteById(merchantId);
-        optMerchant = this.merchantService.findById(merchantId);
-        assertFalse(optMerchant.isPresent(), "Merchant delete failed");
 
         // Delete User
         this.userService.deleteById(userId);
-        optUser = this.userService.findById(userId);
-        assertFalse(optUser.isPresent(), "User delete failed");
     }
 
 }

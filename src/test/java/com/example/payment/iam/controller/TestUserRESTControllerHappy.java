@@ -16,11 +16,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.example.payment.iam.model.Role;
 
 /**
- * UserRESTController test cases.
+ * UserRESTController test cases. Happy path.
  */
-@SpringBootTest(classes = com.example.payment.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = com.example.payment.app.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-class TestUserRESTController {
+class TestUserRESTControllerHappy {
 
     /**
      * MockMvc bean instance to invoke the APIs.
@@ -34,7 +34,7 @@ class TestUserRESTController {
      * @throws Exception
      */
     @Test
-    public void getAllUsers() throws Exception {
+    public void testListAll() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/api/user").accept(MediaType.APPLICATION_JSON).with(user(getClass().getSimpleName())
                 .password(getClass().getSimpleName()).authorities(new SimpleGrantedAuthority(Role.ADMINISTRATOR.getRoleName())))).andDo(print())
                 .andExpect(status().isOk());

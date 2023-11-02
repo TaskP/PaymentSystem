@@ -1,4 +1,4 @@
-package com.example.payment.main;
+package com.example.payment.common;
 
 import java.io.File;
 import java.io.IOException;

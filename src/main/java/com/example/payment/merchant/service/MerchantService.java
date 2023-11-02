@@ -38,7 +38,7 @@ public class MerchantService {
      * @param id
      * @return Optional<Merchant>
      */
-    public Optional<Merchant> findById(final Long id) {
+    public Optional<Merchant> findById(final long id) {
         return merchantRepository.findById(id);
     }
 
@@ -57,7 +57,7 @@ public class MerchantService {
      *
      * @param id
      */
-    public void deleteById(final Long id) {
+    public void deleteById(final long id) {
         merchantRepository.deleteById(id);
     }
 

@@ -2,11 +2,15 @@ package com.example.payment.merchant.model;
 
 import java.io.Serializable;
 
-import com.example.payment.utils.IdUtils;
+import com.example.payment.common.IdUtils;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -25,16 +29,15 @@ public final class Merchant implements Serializable {
      * Merchant ID. A unique identifier for each merchant in the system.
      */
     @Id
-    @Column(unique = true)
-    @NotNull
-    private Long id;
+    @Column
+    private long id;
 
     /**
      * Merchant name. Unique. Mandatory. Length must be between 1 to 255
      */
     @Column(nullable = false, unique = true, length = 255)
-    @NotNull
     @Size(min = 1, max = 255, message = "Invalid Name. Length must be between 1 to 255")
+    @NotNull
     private String name;
 
     /**
@@ -61,8 +64,15 @@ public final class Merchant implements Serializable {
      * Status: active/inactive (true/false).
      */
     @Column(nullable = false)
-    @NotNull
     private boolean status;
+
+    /**
+     * Total transaction sum. Modeled in external entity in order to avoid locking
+     * on update.
+     */
+    @OneToOne(mappedBy = "merchant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    private MerchantSum merchantSum;
 
     /**
      * Default no-arg constructor.
@@ -75,7 +85,7 @@ public final class Merchant implements Serializable {
      *
      * @param idIn merchant id to set
      */
-    public Merchant(final Long idIn) {
+    public Merchant(final long idIn) {
         super();
         this.setId(idIn);
     }
@@ -89,7 +99,7 @@ public final class Merchant implements Serializable {
      * @param emailIn
      * @param statusIn
      */
-    public Merchant(final Long idIn, final String nameIn, final String descriptionIn, final String emailIn, final boolean statusIn) {
+    public Merchant(final long idIn, final String nameIn, final String descriptionIn, final String emailIn, final boolean statusIn) {
         this(idIn);
         this.setName(nameIn);
         this.setDescription(descriptionIn);
@@ -100,14 +110,14 @@ public final class Merchant implements Serializable {
     /**
      * @return current merchant Id
      */
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
     /**
      * @param idIn merchant id to set
      */
-    public void setId(final Long idIn) {
+    public void setId(final long idIn) {
         this.id = idIn;
     }
 

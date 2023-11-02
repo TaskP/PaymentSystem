@@ -1,4 +1,4 @@
-package com.example.payment.main;
+package com.example.payment.app;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
 
+import com.example.payment.common.Importer;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
 

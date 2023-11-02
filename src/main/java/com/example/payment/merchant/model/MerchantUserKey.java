@@ -15,20 +15,17 @@ public final class MerchantUserKey implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // @Column(unique = true)
-    // private Long id = IdUtils.idLong();
-
     /**
      * Merchant ID.
      */
     @Column(name = "merchant_id")
-    private Long merchantId;
+    private long merchantId;
 
     /**
      * User ID.
      */
     @Column(name = "user_id")
-    private Long userId;
+    private long userId;
 
     /**
      * Default no-arg constructor.
@@ -43,7 +40,7 @@ public final class MerchantUserKey implements Serializable {
      * @param merchantIdIn
      * @param userIdIn
      */
-    public MerchantUserKey(final Long merchantIdIn, final Long userIdIn) {
+    public MerchantUserKey(final long merchantIdIn, final long userIdIn) {
         this();
         this.merchantId = merchantIdIn;
         this.userId = userIdIn;
@@ -52,28 +49,28 @@ public final class MerchantUserKey implements Serializable {
     /**
      * @return merchantId
      */
-    public Long getMerchantId() {
+    public long getMerchantId() {
         return merchantId;
     }
 
     /**
      * @param merchantIdIn
      */
-    public void setMerchantId(final Long merchantIdIn) {
+    public void setMerchantId(final long merchantIdIn) {
         this.merchantId = merchantIdIn;
     }
 
     /**
      * @return userId
      */
-    public Long getUserId() {
+    public long getUserId() {
         return userId;
     }
 
     /**
      * @param userIdIn
      */
-    public void setUserId(final Long userIdIn) {
+    public void setUserId(final long userIdIn) {
         this.userId = userIdIn;
     }
 
