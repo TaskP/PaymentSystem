@@ -1,0 +1,27 @@
+version: "2.2"
+
+services:
+  mysql:
+    image: mysql:8.2
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rPwd931
+      - MYSQL_ALLOW_EMPTY_PASSWORD=false
+      - MYSQL_USER=taskpusr
+      - MYSQL_PASSWORD=task!@#
+      - MYSQL_DATABASE=taskpdb
+    volumes:
+      - "./conf.d:/etc/mysql/conf.d:ro"
+    profiles:
+    - mysql
+  postgres:
+    image: postgres:16.0
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=taskpusr
+      - POSTGRES_PASSWORD=task!@#
+      - POSTGRES_DB=taskpdb
+    profiles:
+    - postgres

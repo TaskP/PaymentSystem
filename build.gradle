@@ -48,15 +48,15 @@ dependencies {
 
 
 tasks.named("bootJar") {
-	mainClass = 'com.example.payment.app.main.AppWeb'
+	mainClass = 'com.example.payment.app.AppWeb'
 }
 
 tasks.named("bootRun") {
-	mainClass = 'com.example.payment.app.main.AppWeb'
+	mainClass = 'com.example.payment.app.AppWeb'
 }
 tasks.named("bootTestRun") {
 	//TODO
-	mainClass = 'com.example.payment.app.main.AppInfo'
+	mainClass = 'com.example.payment.app.AppInfo'
 }
 
 checkstyle {

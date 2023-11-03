@@ -8,7 +8,7 @@
     * [Configuration](#configuration)
     * [Testing](#testing)
 - [Linter](#linter)
-- [Getting Started](#getting-started)
+- [Running the project locally](#Running-the-project-locally)
 
 ## Payment System Task
 
@@ -108,9 +108,7 @@ Tests are located in the ```test``` directory with package definitions matching 
 - ```./gradlew checkStyleMain``` runs checks in main  
 - ```./gradlew checkStyleTest``` runs checks in test    
 
-## Getting Started
-
-### Running the project locally
+## Running the project locally
 
 1. Project setup  
     1.1. Clone repository  
@@ -132,10 +130,14 @@ Tests are located in the ```test``` directory with package definitions matching 
     GRANT ALL PRIVILEGES ON taskpdb.* TO 'taskpusr'@'%';
     FLUSH PRIVILEGES;
     ```  
-    or create and run docker container
+    or create and run docker container manually
     ```
     docker run --name mysql -p 3306:3306 -e MYSQL_USER=taskpusr -e MYSQL_PASSWORD='task!@#' -e MYSQL_ROOT_PASSWORD=rPwd931 -e MYSQL_DATABASE=taskpdb -d mysql:8.2
     ```   
+    or use the provided docker-compose.yml
+    ```
+    docker-compose --profile mysql up
+    ```
     2.1.2. Set server IP instead of 192.168.122.1, DB name,Username, and password in application.properties and in application-cli.properties
     ```
     spring.datasource.username=taskpusr
@@ -150,10 +152,14 @@ Tests are located in the ```test``` directory with package definitions matching 
     CREATE USER taskpusr WITH PASSWORD 'task!@#' NOCREATEDB LOGIN;
     ALTER DATABASE taskpdb OWNER TO taskpusr;
     ```  
-    or create and run docker container
+    or create and run docker container manually
     ```
 	docker run --name postgres -p 5432:5432 -e POSTGRES_USER=taskpusr -e POSTGRES_PASSWORD='task!@#' -e POSTGRES_DB=taskpdb -d postgres:16.0
     ```   
+    or use the provided docker-compose.yml
+    ```
+    docker-compose --profile postgres up
+    ```
     2.2.2. Set server IP instead of 192.168.122.1, DB name,Username, and password in application.properties and in application-cli.properties
     ```
     spring.datasource.username=taskpusr
