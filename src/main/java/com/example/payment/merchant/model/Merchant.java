@@ -88,6 +88,7 @@ public final class Merchant implements Serializable {
     public Merchant(final long idIn) {
         super();
         this.setId(idIn);
+        // this.setMerchantSum(0);
     }
 
     /**
@@ -181,6 +182,26 @@ public final class Merchant implements Serializable {
      */
     public void setStatus(final boolean statusIn) {
         this.status = statusIn;
+    }
+
+    /**
+     *
+     * @return MerchantSum
+     */
+    public MerchantSum getMerchantSum() {
+        return merchantSum;
+    }
+
+    /**
+     *
+     * @param merchantSumIn
+     */
+    public void setMerchantSum(final double merchantSumIn) {
+        if (this.merchantSum == null) {
+            this.merchantSum = new MerchantSum(getId(), merchantSumIn);
+        } else {
+            this.merchantSum.setTotalTransactionSum(merchantSumIn);
+        }
     }
 
     @Override

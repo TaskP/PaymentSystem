@@ -10,7 +10,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @SpringBootConfiguration
 @EntityScan(basePackages = { "com.example.payment.iam.model" })
-@ComponentScan(basePackages = { "com.example.payment.iam.controller", "com.example.payment.iam.security", "com.example.payment.iam.service" })
+@ComponentScan(basePackages = { "com.example.payment.iam.controller", "com.example.payment.iam.factory", "com.example.payment.iam.security",
+        "com.example.payment.iam.service" })
 @EnableJpaRepositories(basePackages = { "com.example.payment.iam.repository" })
 public class IamConfig {
 

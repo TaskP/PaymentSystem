@@ -93,6 +93,7 @@ Spring Boot Application with Hibernate JPA. Supports MySQL and PostgreSQL as a d
   * All application logic is in ```iam``` and ```merchant``` packages with similar structure  
     * ```config``` - Spring Boot Configurations. Sets locations for entity, component, and repository relevant to package  
     * ```controller``` - handles and routes incoming HTTP requests    
+    * ```factory``` - implementation of the Factory Design Pattern   
     * ```model``` - entities and data structures  
     * ```repository``` - data access of entities
     * ```security``` - only in ```iam```. Contains configuration and setup of PasswordEncoder and SecurityConfig

@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.payment.common.IdUtils;
+import com.example.payment.merchant.factory.MerchantFactory;
+import com.example.payment.merchant.factory.TransactionFactory;
 import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.model.Transaction;
 import com.example.payment.merchant.model.TransactionRefund;
+import com.example.payment.merchant.model.TransactionStatus;
 
 /**
  * TransactionService TransactionRefund test cases. Happy path.
@@ -27,10 +30,22 @@ class TestTransactionServiceTransactionRefundHappy {
     private TransactionService transactionService;
 
     /**
+     * TransactionFactory.
+     */
+    @Autowired
+    private TransactionFactory transactionFactory;
+
+    /**
      * MerchantService.
      */
     @Autowired
     private MerchantService merchantService;
+
+    /**
+     * MerchantFactory.
+     */
+    @Autowired
+    private MerchantFactory merchantFactory;
 
     /**
      * Test create TransactionRefund.
@@ -54,15 +69,12 @@ class TestTransactionServiceTransactionRefundHappy {
         }.getClass().getEnclosingMethod().getName();
         final String email = methodName + "-" + runId + "@" + clazzName + ".test";
 
-        // Create Merchant
         final long merchantId = runId;
-        Merchant merchant = new Merchant(merchantId, email, null, email, true);
+        final String name = clazzName + "-" + runId;
+        Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
         merchant = this.merchantService.save(merchant);
 
-        TransactionRefund transactionRefund = new TransactionRefund();
-        transactionRefund.setMerchant(merchant);
-        transactionRefund.setAmount(1D);
-        transactionRefund.setCustomerEmail(email);
+        TransactionRefund transactionRefund = transactionFactory.getTransactionRefund(null, merchant, 1D, TransactionStatus.APPROVED, email, null, null);
         transactionRefund = (TransactionRefund) transactionService.create(transactionRefund);
 
         Optional<Transaction> optTransaction = this.transactionService.findById(transactionRefund.getUuid());

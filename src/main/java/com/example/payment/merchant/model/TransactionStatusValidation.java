@@ -12,11 +12,11 @@ import jakarta.validation.Payload;
 /**
  * Role validation annotation.
  */
-@Constraint(validatedBy = { TransactionStatusTypeValidator.class })
+@Constraint(validatedBy = { TransactionStatusValidator.class })
 @Target(value = { ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface TransactionStatusTypeValidation {
+public @interface TransactionStatusValidation {
 
     /**
      *

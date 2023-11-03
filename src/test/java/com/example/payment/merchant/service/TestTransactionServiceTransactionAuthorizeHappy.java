@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.payment.common.IdUtils;
+import com.example.payment.merchant.factory.MerchantFactory;
+import com.example.payment.merchant.factory.TransactionFactory;
 import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.model.Transaction;
 import com.example.payment.merchant.model.TransactionAuthorize;
+import com.example.payment.merchant.model.TransactionStatus;
 
 /**
  * TransactionService TransactionAuthorize test cases. Happy path.
@@ -27,10 +30,22 @@ class TestTransactionServiceTransactionAuthorizeHappy {
     private TransactionService transactionService;
 
     /**
+     * TransactionFactory.
+     */
+    @Autowired
+    private TransactionFactory transactionFactory;
+
+    /**
      * MerchantService.
      */
     @Autowired
     private MerchantService merchantService;
+
+    /**
+     * MerchantFactory.
+     */
+    @Autowired
+    private MerchantFactory merchantFactory;
 
     /**
      * Test create TransactionAuthorize.
@@ -54,15 +69,13 @@ class TestTransactionServiceTransactionAuthorizeHappy {
         }.getClass().getEnclosingMethod().getName();
         final String email = methodName + "-" + runId + "@" + clazzName + ".test";
 
-        // Create Merchant
         final long merchantId = runId;
-        Merchant merchant = new Merchant(merchantId, email, null, email, true);
+        final String name = clazzName + "-" + runId;
+        Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
         merchant = this.merchantService.save(merchant);
 
-        TransactionAuthorize transactionAuthorize = new TransactionAuthorize();
-        transactionAuthorize.setMerchant(merchant);
-        transactionAuthorize.setAmount(1D);
-        transactionAuthorize.setCustomerEmail(email);
+        TransactionAuthorize transactionAuthorize = transactionFactory.getTransactionAuthorize(null, merchant, 1D, TransactionStatus.APPROVED, email, null,
+                null);
         transactionAuthorize = (TransactionAuthorize) transactionService.create(transactionAuthorize);
 
         Optional<Transaction> optTransaction = this.transactionService.findById(transactionAuthorize.getUuid());

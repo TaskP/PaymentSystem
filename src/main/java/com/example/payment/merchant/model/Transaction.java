@@ -64,7 +64,7 @@ public class Transaction implements Serializable {
      * Transaction Status.
      */
     @Column(nullable = false)
-    @TransactionStatusTypeValidation
+    @TransactionStatusValidation
     private byte status;
 
     /**
@@ -204,8 +204,8 @@ public class Transaction implements Serializable {
     /**
      * @param statusIn
      */
-    public void setStatus(final TransactionStatusType statusIn) {
-        setStatus(statusIn == null ? TransactionStatusType.UNKNOWN.getStatusId() : statusIn.getStatusId());
+    public void setStatus(final TransactionStatus statusIn) {
+        setStatus(statusIn == null ? TransactionStatus.UNKNOWN.getStatusId() : statusIn.getStatusId());
     }
 
     /**

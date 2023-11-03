@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.payment.common.IdUtils;
+import com.example.payment.iam.factory.UserFactory;
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
 
@@ -24,6 +25,12 @@ class TestUserServiceHappy {
      */
     @Autowired
     private UserService userService;
+
+    /**
+     * UserFactory.
+     */
+    @Autowired
+    private UserFactory userFactory;
 
     /**
      * Test create.
@@ -48,7 +55,7 @@ class TestUserServiceHappy {
 
         final long id = runId;
         final String username = clazzName + "-" + runId;
-        User user = new User(id, username, email, "pass-" + id, Role.ADMINISTRATOR.getValue(), true);
+        User user = userFactory.getUser(id, username, email, "pass-" + id, Role.ADMINISTRATOR, true);
         user = this.userService.create(user);
         Optional<User> optUser = this.userService.findById(id);
         assertTrue(optUser.isPresent(), "findById failed #1");

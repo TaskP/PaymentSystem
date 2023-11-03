@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.payment.common.IdUtils;
+import com.example.payment.merchant.factory.MerchantFactory;
 import com.example.payment.merchant.model.Merchant;
 
 /**
@@ -23,6 +24,12 @@ class TestMerchantServiceHappy {
      */
     @Autowired
     private MerchantService merchantService;
+
+    /**
+     * MerchantFactory.
+     */
+    @Autowired
+    private MerchantFactory merchantFactory;
 
     /**
      * Test create.
@@ -45,20 +52,20 @@ class TestMerchantServiceHappy {
         }.getClass().getEnclosingMethod().getName();
         final String email = methodName + "-" + runId + "@" + clazzName + ".test";
 
-        final long id = runId;
+        final long merchantId = runId;
         final String name = clazzName + "-" + runId;
-        Merchant merchant = new Merchant(id, name, name + " Description", email, true);
+        Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
         merchant = this.merchantService.save(merchant);
-        Optional<Merchant> optMerchant = this.merchantService.findById(id);
+        Optional<Merchant> optMerchant = this.merchantService.findById(merchantId);
         assertTrue(optMerchant.isPresent(), "findById failed #1");
         assertTrue(name.equals(optMerchant.get().getName()), "findById failed #2");
 
         optMerchant = this.merchantService.findByName(name);
         assertTrue(optMerchant.isPresent(), "findByName failed #1");
-        assertTrue(optMerchant.get().getId() == id, "findByName failed #2");
+        assertTrue(optMerchant.get().getId() == merchantId, "findByName failed #2");
 
-        this.merchantService.deleteById(id);
-        optMerchant = this.merchantService.findById(id);
+        this.merchantService.deleteById(merchantId);
+        optMerchant = this.merchantService.findById(merchantId);
         assertFalse(optMerchant.isPresent(), "Delete failed");
     }
 

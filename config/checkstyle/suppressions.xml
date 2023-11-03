@@ -5,4 +5,5 @@
 <suppressions>
     <suppress checks="HideUtilityClassConstructor" files="AppWeb.java"/>
     <suppress checks="MagicNumber"/>
+    <suppress checks="ParameterNumber"/>
 </suppressions>

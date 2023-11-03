@@ -42,6 +42,25 @@ public final class MerchantSum implements Serializable {
     private double totalTransactionSum;
 
     /**
+     * Default no-arg constructor.
+     */
+    public MerchantSum() {
+        super();
+    }
+
+    /**
+     * MerchantSum.
+     *
+     * @param merchantId
+     * @param totalTransactionSumIn
+     */
+    public MerchantSum(final long merchantId, final double totalTransactionSumIn) {
+        this();
+        this.id = merchantId;
+        this.totalTransactionSum = totalTransactionSumIn;
+    }
+
+    /**
      * @return merchantId
      */
     public long getMerchantId() {

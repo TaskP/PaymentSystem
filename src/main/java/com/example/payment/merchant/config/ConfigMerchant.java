@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @SpringBootConfiguration
 @EntityScan(basePackages = { "com.example.payment.merchant.model" })
-@ComponentScan(basePackages = { "com.example.payment.merchant.controller", "com.example.payment.merchant.service" })
+@ComponentScan(basePackages = { "com.example.payment.merchant.controller", "com.example.payment.merchant.factory", "com.example.payment.merchant.service" })
 @EnableJpaRepositories(basePackages = { "com.example.payment.merchant.repository" })
 public class ConfigMerchant {
 

@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.payment.common.IdUtils;
+import com.example.payment.iam.factory.UserFactory;
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
+import com.example.payment.merchant.factory.MerchantFactory;
+import com.example.payment.merchant.factory.MerchantUserFactory;
 import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.model.MerchantUser;
 
@@ -31,16 +34,34 @@ class TestMerchantUserServiceHappy {
     private MerchantUserService merchantUserService;
 
     /**
+     * MerchantUserFactory.
+     */
+    @Autowired
+    private MerchantUserFactory merchantUserFactory;
+
+    /**
      * MerchantService.
      */
     @Autowired
     private MerchantService merchantService;
 
     /**
+     * MerchantFactory.
+     */
+    @Autowired
+    private MerchantFactory merchantFactory;
+
+    /**
      * UserService.
      */
     @Autowired
     private UserService userService;
+
+    /**
+     * UserFactory.
+     */
+    @Autowired
+    private UserFactory userFactory;
 
     /**
      * Test create.
@@ -77,17 +98,17 @@ class TestMerchantUserServiceHappy {
         final String testName = clazzName + "-" + runId;
 
         // Create Merchant
-        Merchant merchant = new Merchant(merchantId, testName, testName + " Description", email, true);
+        Merchant merchant = merchantFactory.getMerchant(merchantId, testName, email);
         merchant = this.merchantService.save(merchant);
 
         // Create User
         final String username = testName;
         final long userId = merchantId + 1;
-        User user = new User(userId, username, username + " Lastname", "pass-" + userId, Role.ADMINISTRATOR.getValue(), true);
+        User user = userFactory.getUser(userId, username, email, Role.ADMINISTRATOR);
         user = this.userService.create(user);
 
         // Create MerchantUser
-        final MerchantUser merchantUser = new MerchantUser(merchant, user);
+        final MerchantUser merchantUser = merchantUserFactory.getMerchant(merchant, user);
         this.merchantUserService.save(merchantUser);
         Optional<MerchantUser> optMerchantUser = this.merchantUserService.findById(merchantId, userId);
         assertTrue(optMerchantUser.isPresent(), "MerchantUser findById failed");

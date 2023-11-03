@@ -3,7 +3,7 @@ package com.example.payment.merchant.model;
 /**
  * Transaction Status (approved, reversed, refunded, error).
  */
-public enum TransactionStatusType {
+public enum TransactionStatus {
     /**
      * Unknown. Fallback status.
      */
@@ -29,12 +29,12 @@ public enum TransactionStatusType {
     /**
      * Java clones the array when we call values(). Caching it increases the speed.
      */
-    private static final TransactionStatusType[] VALUES = TransactionStatusType.values();
+    private static final TransactionStatus[] VALUES = TransactionStatus.values();
 
     /**
      * @return cached array of values
      */
-    public static TransactionStatusType[] getValues() {
+    public static TransactionStatus[] getValues() {
         return VALUES;
     }
 
@@ -48,7 +48,7 @@ public enum TransactionStatusType {
      */
     private final String statusName;
 
-    TransactionStatusType(final int param, final String typeName) {
+    TransactionStatus(final int param, final String typeName) {
         this.statusId = (byte) param;
         this.statusName = typeName;
     }
@@ -75,12 +75,12 @@ public enum TransactionStatusType {
      * @param statusId
      * @return TransactionStatusType
      */
-    public static TransactionStatusType parse(final Byte statusId) {
+    public static TransactionStatus parse(final Byte statusId) {
         if (statusId == null) {
             return null;
         }
 
-        for (final TransactionStatusType item : getValues()) {
+        for (final TransactionStatus item : getValues()) {
             if (item.getStatusId() == statusId) {
                 return item;
             }
@@ -95,12 +95,12 @@ public enum TransactionStatusType {
      * @param name
      * @return TransactionStatusType
      */
-    public static TransactionStatusType parse(final String name) {
+    public static TransactionStatus parse(final String name) {
         if (name == null) {
             return null;
         }
 
-        for (final TransactionStatusType item : getValues()) {
+        for (final TransactionStatus item : getValues()) {
             if (name.equalsIgnoreCase(item.getStatusName())) {
                 return item;
             }

@@ -30,6 +30,9 @@ class TestMerchantServiceNegative {
      * Creates a Merchant with invalid email. Email validator throws validation
      * exception.
      *
+     * This test case does not use MerchantFactory since it checks for validity and
+     * it will not test persistence validation.
+     *
      */
     @Test
     void testInvalidEmail() {

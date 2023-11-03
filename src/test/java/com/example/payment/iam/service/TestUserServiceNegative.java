@@ -28,15 +28,19 @@ class TestUserServiceNegative {
      * Test Role Validation.
      *
      * Creates a User with invalid role. Role validator throws Exception.
+     *
+     * This test case does not use UserFactory since it checks for Role validity and
+     * it will not test persistence validation.
      */
     @Test
     void testInvalidRole() {
         final long runId = IdUtils.idLong();
-        final String testName = getClass().getSimpleName() + "_" + new Object() {
-        }.getClass().getEnclosingMethod().getName() + "_" + runId;
-        final String email = testName + "@example.com";
+        final String clazzName = getClass().getSimpleName();
+        final String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        final String email = methodName + "-" + runId + "@" + clazzName + ".test";
         final long id = runId;
-        final String username = testName;
+        final String username = clazzName + "-" + runId;
         final User user = new User(id, username, email, "pass-" + id, 0, true);
         final Exception exception = assertThrows(Exception.class, () -> userService.create(user));
         assertNotNull(exception);
