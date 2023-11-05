@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
+import com.example.payment.iam.model.UserDetailsImpl;
 import com.example.payment.iam.repository.UserRepository;
 
 /**

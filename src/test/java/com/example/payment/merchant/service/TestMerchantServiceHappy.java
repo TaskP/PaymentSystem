@@ -9,14 +9,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.payment.common.IdUtils;
+import com.example.payment.common.utils.IdUtils;
+import com.example.payment.iam.factory.UserFactory;
+import com.example.payment.iam.model.Role;
 import com.example.payment.merchant.factory.MerchantFactory;
 import com.example.payment.merchant.model.Merchant;
 
 /**
  * MerchantService test cases. Happy path.
  */
-@SpringBootTest(classes = com.example.payment.app.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = com.example.payment.app.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class TestMerchantServiceHappy {
 
     /**
@@ -30,6 +32,12 @@ class TestMerchantServiceHappy {
      */
     @Autowired
     private MerchantFactory merchantFactory;
+
+    /**
+     * UserFactory.
+     */
+    @Autowired
+    private UserFactory userFactory;
 
     /**
      * Test create.
@@ -53,16 +61,31 @@ class TestMerchantServiceHappy {
         final String email = methodName + "-" + runId + "@" + clazzName + ".test";
 
         final long merchantId = runId;
-        final String name = clazzName + "-" + runId;
-        Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
-        merchant = this.merchantService.save(merchant);
-        Optional<Merchant> optMerchant = this.merchantService.findById(merchantId);
-        assertTrue(optMerchant.isPresent(), "findById failed #1");
-        assertTrue(name.equals(optMerchant.get().getName()), "findById failed #2");
+        final long userId = merchantId + 1;
+        final String merchantName = clazzName + "-" + runId;
+        Merchant merchant = merchantFactory.getMerchant(merchantId, merchantName, email);
+        merchant.addUser(userFactory.getUser(userId, email, merchantName, Role.MERCHANT));
 
-        optMerchant = this.merchantService.findByName(name);
+        System.out.println("Creating " + merchant);
+
+        merchant = this.merchantService.create(merchant);
+
+        System.out.println("Created " + merchant);
+
+        Optional<Merchant> optMerchant = this.merchantService.findById(merchantId);
+
+        System.out.println("FindById:" + optMerchant);
+
+        assertTrue(optMerchant.isPresent(), "findById failed #1");
+        assertTrue(merchantName.equals(optMerchant.get().getName()), "findById failed #2");
+
+        optMerchant = this.merchantService.findByName(merchantName);
         assertTrue(optMerchant.isPresent(), "findByName failed #1");
         assertTrue(optMerchant.get().getId() == merchantId, "findByName failed #2");
+
+        optMerchant = this.merchantService.findByUserId(userId);
+        assertTrue(optMerchant.isPresent(), "findByUserId failed #1");
+        assertTrue(optMerchant.get().getId() == merchantId, "findByUserId failed #2");
 
         this.merchantService.deleteById(merchantId);
         optMerchant = this.merchantService.findById(merchantId);

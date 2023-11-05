@@ -11,6 +11,7 @@ import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ValidationException;
 import jakarta.validation.Validator;
 
 /**
@@ -25,6 +26,27 @@ public class UserFactoryImpl implements UserFactory {
      */
     @Autowired
     private Validator validator;
+
+    @Override
+    public ValidationException validate(final User user) {
+        if (user == null) {
+            return new ValidationException("User is null");
+        }
+        if (user.getId() == 0) {
+            return new ValidationException("Invalid Id");
+        }
+        if (user.getUsername() == null || user.getUsername().length() == 0) {
+            return new ValidationException("Invalid Username");
+        }
+        if (user.getRole() == 0) {
+            return new ValidationException("Invalid Role");
+        }
+        final Set<ConstraintViolation<User>> valResult = validator.validate(user);
+        if (valResult != null && valResult.size() != 0) {
+            return new ValidationException("Validation failed! Error:" + valResult);
+        }
+        return null;
+    }
 
     /**
      * Builds new User with all fields. Throws exception if username is null or
@@ -41,21 +63,11 @@ public class UserFactoryImpl implements UserFactory {
      */
     @Override
     public User getUser(final long id, final String username, final String fullName, final String password, final Role role, final boolean status)
-            throws IllegalArgumentException {
-        if (id == 0) {
-            throw new IllegalArgumentException("Invalid Id");
-        }
-        if (username == null || username.length() == 0) {
-            throw new IllegalArgumentException("Invalid Username");
-        }
-        if (role == null) {
-            throw new IllegalArgumentException("Invalid Role");
-        }
-        final User ret = new User(id, username, fullName, password, role.getValue(), status);
-
-        final Set<ConstraintViolation<User>> valResult = validator.validate(ret);
-        if (valResult != null && valResult.size() != 0) {
-            throw new IllegalArgumentException("Validation failed! Error:" + valResult);
+            throws ValidationException {
+        final User ret = new User().setId(id).setUsername(username).setFullName(fullName).setPassword(password).setRole(role).setStatus(status);
+        final ValidationException ex = validate(ret);
+        if (ex != null) {
+            throw ex;
         }
         return ret;
     }

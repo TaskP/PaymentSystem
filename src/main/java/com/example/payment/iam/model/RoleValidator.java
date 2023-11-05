@@ -1,6 +1,6 @@
 package com.example.payment.iam.model;
 
-import com.example.payment.common.BitUtils;
+import com.example.payment.common.utils.BitUtils;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

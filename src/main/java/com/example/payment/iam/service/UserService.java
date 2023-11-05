@@ -4,15 +4,19 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.payment.iam.factory.UserFactory;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.repository.UserRepository;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 
 /**
  * Provides a CRUD services and operations related to User.
@@ -25,6 +29,12 @@ public class UserService {
      */
     @Autowired
     private UserRepository userRepository;
+
+    /**
+     * UserFactory.
+     */
+    @Autowired
+    private UserFactory userFactory;
 
     /**
      * Autowired PasswordEncoder.
@@ -74,12 +84,27 @@ public class UserService {
     }
 
     /**
+     * Strip user password.
+     *
+     * @param users
+     * @return Page<User>
+     */
+    protected Page<User> formatOut(final Page<User> users) {
+        if (users != null && !users.isEmpty()) {
+            for (final User user : users) {
+                formatOut(user);
+            }
+        }
+        return users;
+    }
+
+    /**
      * List all users.
      *
      * @return List<User> with all users
      */
     public List<User> findAll() {
-        return userRepository.findAll();
+        return formatOut(userRepository.findAll());
     }
 
     /**
@@ -98,10 +123,20 @@ public class UserService {
      * @param user
      * @return persisted user
      */
-    public User create(@Valid final User user) throws EntityExistsException {
-        final Optional<User> ex = findById(user.getId());
+    public User create(@Valid final User user) {
+
+        final ValidationException vex = userFactory.validate(userFactory.setUserIdIfNeeded(user));
+        if (vex != null) {
+            throw vex;
+        }
+
+        Optional<User> ex = findById(user.getId());
         if (ex.isPresent()) {
             throw new EntityExistsException("User exists! Id:" + user.getId());
+        }
+        ex = findByUsername(user.getUsername());
+        if (ex.isPresent()) {
+            throw new EntityExistsException("User exists! Username:" + user.getUsername());
         }
         if (passwordEncoder != null && user.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -116,12 +151,19 @@ public class UserService {
      *
      * @param user
      * @return persisted user
-     * @throws Exception
      */
-    public User update(@Valid final User user) throws EntityNotFoundException {
-        final Optional<User> ex = findById(user.getId());
+    public User update(@Valid final User user) {
+        final ValidationException vex = userFactory.validate(user);
+        if (vex != null) {
+            throw vex;
+        }
+        Optional<User> ex = userRepository.findById(user.getId());
         if (!ex.isPresent()) {
             throw new EntityNotFoundException("User not found! Id:" + user.getId());
+        }
+        ex = findByUsername(user.getUsername());
+        if (ex.isPresent() && ex.get().getId() != user.getId()) {
+            throw new EntityExistsException("User exists! Username:" + user.getUsername());
         }
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(ex.get().getPassword());
@@ -151,5 +193,9 @@ public class UserService {
      */
     public Optional<User> findByUsername(final String username) {
         return formatOut(userRepository.findByUsername(username));
+    }
+
+    public Page<User> findByUsername(final String username, final Pageable pageable) {
+        return formatOut(userRepository.findByUsername(username, pageable));
     }
 }

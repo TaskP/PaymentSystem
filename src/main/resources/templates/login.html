@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout ('LoggedOut',~{::body},'error')}">
+  <body>
+    <div class="container">
+        <p>
+          Login is required
+        </p>
+        <p>
+          <a href="/login" class="btn btn-large btn-success">Login</a>
+        </p>
+    </div>
+  </body>
+</html>

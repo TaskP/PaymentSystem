@@ -1,10 +1,11 @@
 package com.example.payment.merchant.service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.payment.merchant.model.Transaction;
@@ -30,8 +31,12 @@ public class TransactionService {
      *
      * @return List<Transaction> with all Transactions
      */
-    public List<Transaction> findAll() {
-        return transactionRepository.findAll();
+    public Page<Transaction> findAll(final Pageable pageable) {
+        return transactionRepository.findAll(pageable);
+    }
+
+    public Page<Transaction> findAll(final long merchantId, final Pageable pageable) {
+        return transactionRepository.findByMerchantId(merchantId, pageable);
     }
 
     /**
@@ -54,7 +59,7 @@ public class TransactionService {
         if (transaction.getUuid() != null) {
             final Optional<Transaction> ex = findById(transaction.getUuid());
             if (ex.isPresent()) {
-                throw new EntityExistsException("Transaction exists! Id:" + transaction.getUuid());
+                throw new EntityExistsException("Transaction exists! UUID:" + transaction.getUuid());
             }
         }
         return transactionRepository.save(transaction);

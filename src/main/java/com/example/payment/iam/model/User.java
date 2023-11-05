@@ -1,8 +1,10 @@
 package com.example.payment.iam.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
-import com.example.payment.common.IdUtils;
+import com.example.payment.common.utils.BitUtils;
+import com.example.payment.common.utils.StringUtils;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -75,83 +77,31 @@ public final class User implements Serializable {
     @NotNull
     private boolean status;
 
-    /**
-     * Default no-arg constructor.
-     */
-    public User() {
-        this(IdUtils.idLong());
-    }
-
-    /**
-     *
-     * @param idIn user id to set
-     */
-    public User(final long idIn) {
-        super();
-        this.setId(idIn);
-    }
-
-    /**
-     * All fields constructor.
-     *
-     * @param idIn
-     * @param usernameIn
-     * @param fullNameIn
-     * @param passwordIn
-     * @param roleIn
-     * @param statusIn
-     */
-    public User(final long idIn, final String usernameIn, final String fullNameIn, final String passwordIn, final long roleIn, final boolean statusIn) {
-        this(idIn);
-        this.setUsername(usernameIn);
-        this.setFullName(fullNameIn);
-        this.setPassword(passwordIn);
-        this.setRole(roleIn);
-        this.setStatus(statusIn);
-    }
-
-    /**
-     * @return current user Id
-     */
     public long getId() {
         return id;
     }
 
-    /**
-     * @param idIn user id to set
-     */
-    public void setId(final long idIn) {
+    public User setId(final long idIn) {
         this.id = idIn;
+        return this;
     }
 
-    /**
-     * @return Username
-     */
     public String getUsername() {
         return username;
     }
 
-    /**
-     * @param usernameIn username to set
-     */
-    public void setUsername(final String usernameIn) {
-        this.username = usernameIn;
+    public User setUsername(final String usernameIn) {
+        this.username = StringUtils.toLowerCase(usernameIn);
+        return this;
     }
 
-    /**
-     *
-     * @return Full Name
-     */
     public String getFullName() {
         return fullName;
     }
 
-    /**
-     *
-     * @param fullNameIn
-     */
-    public void setFullName(final String fullNameIn) {
+    public User setFullName(final String fullNameIn) {
         this.fullName = fullNameIn;
+        return this;
     }
 
     /**
@@ -166,8 +116,9 @@ public final class User implements Serializable {
      *
      * @param passwordIn
      */
-    public void setPassword(final String passwordIn) {
+    public User setPassword(final String passwordIn) {
         this.password = passwordIn;
+        return this;
     }
 
     /**
@@ -178,20 +129,43 @@ public final class User implements Serializable {
         return role;
     }
 
-    /**
-     *
-     * @param roleIn
-     */
-    public void setRole(final long roleIn) {
-        this.role = roleIn;
+    public Set<Role> getRoles() {
+        return Role.toRoles(getRole());
     }
 
-    /**
-     *
-     * @param roleIn
-     */
-    public void setRole(final Role roleIn) {
-        setRole(roleIn == null ? 0 : roleIn.getBitPosition());
+    public User setRole(final long roleIn) {
+        this.role = roleIn;
+        return this;
+    }
+
+    public User setRole(final Role roleIn) {
+        setRole(roleIn == null ? 0 : roleIn.getValue());
+        return this;
+    }
+
+    public void setRoles(final Set<Role> roles) {
+        if (roles == null || roles.size() == 0) {
+            setRole(0L);
+            return;
+        }
+        for (final Role role : roles) {
+            setRole(BitUtils.setBit(role.getBitPosition(), getRole()));
+        }
+    }
+
+    public void setRoles(final String roles) {
+        if (roles == null || roles.length() == 0) {
+            setRole(0L);
+            return;
+        }
+        final String[] rolesSplit = roles.split(",");
+        for (final String role : rolesSplit) {
+            final Role roleParsed = Role.parse(role);
+            if (roleParsed == null) {
+                continue;
+            }
+            setRole(BitUtils.setBit(roleParsed.getBitPosition(), getRole()));
+        }
     }
 
     /**
@@ -202,12 +176,17 @@ public final class User implements Serializable {
         return status;
     }
 
-    /**
-     *
-     * @param statusIn
-     */
-    public void setStatus(final boolean statusIn) {
+    public User setStatus(final boolean statusIn) {
         this.status = statusIn;
+        return this;
+    }
+
+    public void setStatusActive(final String statusIn) {
+        setStatus("active".equalsIgnoreCase(statusIn));
+    }
+
+    public String getStatusActive() {
+        return getStatus() ? "Active" : "Inactive";
     }
 
     @Override

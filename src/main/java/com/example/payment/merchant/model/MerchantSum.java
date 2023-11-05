@@ -4,11 +4,7 @@ import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 /**
@@ -25,15 +21,7 @@ public final class MerchantSum implements Serializable {
      */
     @Id
     @Column(name = "merchant_id")
-    private long id;
-
-    /**
-     * Merchant.
-     */
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "merchant_id")
-    private Merchant merchant;
+    private long merchantId;
 
     /**
      * Total transaction sum.
@@ -48,15 +36,13 @@ public final class MerchantSum implements Serializable {
         super();
     }
 
-    /**
-     * MerchantSum.
-     *
-     * @param merchantId
-     * @param totalTransactionSumIn
-     */
+    public MerchantSum(final long merchantId) {
+        this(merchantId, 0D);
+    }
+
     public MerchantSum(final long merchantId, final double totalTransactionSumIn) {
         this();
-        this.id = merchantId;
+        this.merchantId = merchantId;
         this.totalTransactionSum = totalTransactionSumIn;
     }
 
@@ -64,14 +50,14 @@ public final class MerchantSum implements Serializable {
      * @return merchantId
      */
     public long getMerchantId() {
-        return id;
+        return merchantId;
     }
 
     /**
      * @param merchantIdIn
      */
     public void setMerchantId(final long merchantIdIn) {
-        this.id = merchantIdIn;
+        this.merchantId = merchantIdIn;
     }
 
     /**
@@ -86,6 +72,11 @@ public final class MerchantSum implements Serializable {
      */
     public void setTotalTransactionSum(final double totalTransactionSumIn) {
         this.totalTransactionSum = totalTransactionSumIn;
+    }
+
+    @Override
+    public String toString() {
+        return "merchantId=" + merchantId + ", totalTransactionSum=" + totalTransactionSum + "]";
     }
 
 }

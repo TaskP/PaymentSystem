@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.payment.common.IdUtils;
+import com.example.payment.common.utils.IdUtils;
 import com.example.payment.iam.factory.UserFactory;
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
@@ -17,7 +17,7 @@ import com.example.payment.iam.model.User;
 /**
  * UserService test cases. Happy path.
  */
-@SpringBootTest(classes = com.example.payment.app.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = com.example.payment.app.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class TestUserServiceHappy {
 
     /**
@@ -51,15 +51,15 @@ class TestUserServiceHappy {
         final String clazzName = getClass().getSimpleName();
         final String methodName = new Object() {
         }.getClass().getEnclosingMethod().getName();
-        final String email = methodName + "-" + runId + "@" + clazzName + ".test";
+        final String fullName = methodName + "-" + runId + "@" + clazzName + ".test";
 
         final long id = runId;
-        final String username = clazzName + "-" + runId;
-        User user = userFactory.getUser(id, username, email, "pass-" + id, Role.ADMINISTRATOR, true);
+        final String username = (clazzName + "-" + runId).toLowerCase();
+        User user = userFactory.getUser(id, username, fullName, "pass-" + id, Role.ADMINISTRATOR, true);
         user = this.userService.create(user);
         Optional<User> optUser = this.userService.findById(id);
         assertTrue(optUser.isPresent(), "findById failed #1");
-        assertTrue(username.equals(optUser.get().getUsername()), "findById failed #2");
+        assertTrue(username.equalsIgnoreCase(optUser.get().getUsername()), "findById failed #2");
 
         optUser = this.userService.findByUsername(username);
         assertTrue(optUser.isPresent(), "findByUsername failed #1");

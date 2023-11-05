@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.example.payment.merchant.model.Merchant;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ValidationException;
 import jakarta.validation.Validator;
 
 /**
@@ -25,6 +26,24 @@ public class MerchantFactoryImpl implements MerchantFactory {
     @Autowired
     private Validator validator;
 
+    @Override
+    public ValidationException validate(final Merchant merchant) {
+        if (merchant == null) {
+            return new ValidationException("Merchant is null");
+        }
+        if (merchant.getId() == 0) {
+            return new ValidationException("Invalid Id");
+        }
+        if (merchant.getName() == null || merchant.getName().length() == 0) {
+            return new ValidationException("Invalid Name");
+        }
+        final Set<ConstraintViolation<Merchant>> valResult = validator.validate(merchant);
+        if (valResult != null && valResult.size() != 0) {
+            return new ValidationException("Validation failed! Error:" + valResult);
+        }
+        return null;
+    }
+
     /**
      * Builds new Merchant with all fields. Throws exception if id is zero, name is
      * null or empty or email is not valid.
@@ -35,21 +54,26 @@ public class MerchantFactoryImpl implements MerchantFactory {
      * @param email
      * @param status
      * @return Merchant
-     * @throws IllegalArgumentException
+     * @throws ValidationException
      */
     @Override
     public Merchant getMerchant(final long id, final String name, final String description, final String email, final boolean status)
-            throws IllegalArgumentException {
+            throws ValidationException {
         if (id == 0) {
-            throw new IllegalArgumentException("Invalid Id");
+            throw new ValidationException("Invalid Id");
         }
         if (name == null || name.length() == 0) {
-            throw new IllegalArgumentException("Invalid Name");
+            throw new ValidationException("Invalid Name");
         }
-        final Merchant ret = new Merchant(id, name, description, email, status);
-        final Set<ConstraintViolation<Merchant>> valResult = validator.validate(ret);
-        if (valResult != null && valResult.size() != 0) {
-            throw new IllegalArgumentException("Validation failed! Error:" + valResult);
+        final Merchant ret = new Merchant();
+        ret.setId(id);
+        ret.setName(name);
+        ret.setDescription(description);
+        ret.setEmail(email);
+        ret.setStatus(status);
+        final ValidationException ex = validate(ret);
+        if (ex != null) {
+            throw ex;
         }
         return ret;
     }

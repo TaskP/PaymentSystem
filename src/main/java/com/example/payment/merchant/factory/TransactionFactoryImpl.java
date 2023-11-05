@@ -18,6 +18,7 @@ import com.example.payment.merchant.model.TransactionStatus;
 import com.example.payment.merchant.model.TransactionType;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ValidationException;
 import jakarta.validation.Validator;
 
 /**
@@ -45,17 +46,17 @@ public class TransactionFactoryImpl implements TransactionFactory {
      * @param customerPhone
      * @param referenceTransaction
      * @return Transaction
-     * @throws IllegalArgumentException
+     * @throws ValidationException
      */
     @Override
     public Transaction getTransaction(final TransactionType type, final UUID uuid, final Merchant merchant, final Double amount, final TransactionStatus status,
-            final String customerEmail, final String customerPhone, final Transaction referenceTransaction) throws IllegalArgumentException {
+            final String customerEmail, final String customerPhone, final Transaction referenceTransaction) throws ValidationException {
 
         if (type == null) {
-            throw new IllegalArgumentException("Invalid TransactionType");
+            throw new ValidationException("Invalid TransactionType");
         }
         if (status == null) {
-            throw new IllegalArgumentException("Invalid TransactionStatus");
+            throw new ValidationException("Invalid TransactionStatus");
         }
         final Transaction ret;
         switch (type) {
@@ -72,7 +73,7 @@ public class TransactionFactoryImpl implements TransactionFactory {
             ret = new TransactionReversal();
             break;
         default:
-            throw new IllegalArgumentException("TransactionType not supported");
+            throw new ValidationException("TransactionType not supported");
         }
 
         if (uuid != null) {
@@ -87,7 +88,7 @@ public class TransactionFactoryImpl implements TransactionFactory {
 
         final Set<ConstraintViolation<Transaction>> valResult = validator.validate(ret);
         if (valResult != null && valResult.size() != 0) {
-            throw new IllegalArgumentException("Validation failed! Error:" + valResult);
+            throw new ValidationException("Validation failed! Error:" + valResult);
         }
         return ret;
     }

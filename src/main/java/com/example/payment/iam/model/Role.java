@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.example.payment.common.BitUtils;
+import com.example.payment.common.utils.BitUtils;
 
 /**
  * Roles as a bitmask. Supports to 64 Roles in long.
@@ -80,6 +80,10 @@ public enum Role {
         }
 
         return null;
+    }
+
+    public boolean is(final long value) {
+        return BitUtils.isSet(getBitPosition(), value);
     }
 
     /**

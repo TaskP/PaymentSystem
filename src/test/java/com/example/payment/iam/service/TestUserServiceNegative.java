@@ -9,13 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.TransactionSystemException;
 
-import com.example.payment.common.IdUtils;
+import com.example.payment.common.utils.IdUtils;
+import com.example.payment.iam.factory.UserFactory;
+import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
 
 /**
  * UserService test cases. Negative scenarios.
  */
-@SpringBootTest(classes = com.example.payment.app.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = com.example.payment.app.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class TestUserServiceNegative {
 
     /**
@@ -23,6 +25,12 @@ class TestUserServiceNegative {
      */
     @Autowired
     private UserService userService;
+
+    /**
+     * UserFactory.
+     */
+    @Autowired
+    private UserFactory userFactory;
 
     /**
      * Test Role Validation.
@@ -39,9 +47,11 @@ class TestUserServiceNegative {
         final String methodName = new Object() {
         }.getClass().getEnclosingMethod().getName();
         final String email = methodName + "-" + runId + "@" + clazzName + ".test";
+
         final long id = runId;
         final String username = clazzName + "-" + runId;
-        final User user = new User(id, username, email, "pass-" + id, 0, true);
+        final User user = userFactory.getUser(id, username, email, "pass-" + id, Role.ADMINISTRATOR, true);
+        user.setRole(System.currentTimeMillis()); // Setting invalid role
         final Exception exception = assertThrows(Exception.class, () -> userService.create(user));
         assertNotNull(exception);
         assertEquals(TransactionSystemException.class, exception.getClass());

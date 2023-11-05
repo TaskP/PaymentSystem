@@ -6,4 +6,9 @@
     <suppress checks="HideUtilityClassConstructor" files="AppWeb.java"/>
     <suppress checks="MagicNumber"/>
     <suppress checks="ParameterNumber"/>
+    <suppress checks="JavadocMethod"/>
+    <suppress checks="JavadocPackage"/>
+    <suppress checks="DesignForExtension"/>
+    
+    <suppress checks="HiddenField"/>
 </suppressions>

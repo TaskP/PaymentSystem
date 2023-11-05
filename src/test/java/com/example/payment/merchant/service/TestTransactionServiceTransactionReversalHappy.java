@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.payment.common.IdUtils;
+import com.example.payment.common.utils.IdUtils;
 import com.example.payment.merchant.factory.MerchantFactory;
 import com.example.payment.merchant.factory.TransactionFactory;
 import com.example.payment.merchant.model.Merchant;
@@ -20,7 +20,7 @@ import com.example.payment.merchant.model.TransactionStatus;
 /**
  * TransactionService TransactionReversal test cases. Happy path.
  */
-@SpringBootTest(classes = com.example.payment.app.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = com.example.payment.app.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class TestTransactionServiceTransactionReversalHappy {
 
     /**
@@ -72,7 +72,7 @@ class TestTransactionServiceTransactionReversalHappy {
         final long merchantId = runId;
         final String name = clazzName + "-" + runId;
         Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
-        merchant = this.merchantService.save(merchant);
+        merchant = this.merchantService.create(merchant);
 
         TransactionReversal transactionReversal = transactionFactory.getTransactionReversal(null, merchant, TransactionStatus.APPROVED, email, null, null);
         transactionReversal = (TransactionReversal) transactionService.create(transactionReversal);

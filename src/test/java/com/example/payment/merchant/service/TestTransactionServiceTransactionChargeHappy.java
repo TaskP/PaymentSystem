@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.payment.common.IdUtils;
+import com.example.payment.common.utils.IdUtils;
 import com.example.payment.merchant.factory.MerchantFactory;
 import com.example.payment.merchant.factory.TransactionFactory;
 import com.example.payment.merchant.model.Merchant;
@@ -20,7 +20,7 @@ import com.example.payment.merchant.model.TransactionStatus;
 /**
  * TransactionService TransactionCharge test cases. Happy path.
  */
-@SpringBootTest(classes = com.example.payment.app.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(classes = com.example.payment.app.main.AppWeb.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class TestTransactionServiceTransactionChargeHappy {
 
     /**
@@ -72,7 +72,7 @@ class TestTransactionServiceTransactionChargeHappy {
         final long merchantId = runId;
         final String name = clazzName + "-" + runId;
         Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
-        merchant = this.merchantService.save(merchant);
+        merchant = this.merchantService.create(merchant);
 
         TransactionCharge transactionCharge = transactionFactory.getTransactionCharge(null, merchant, 1D, TransactionStatus.APPROVED, email, null, null);
         transactionCharge = (TransactionCharge) transactionService.create(transactionCharge);

@@ -1,5 +1,5 @@
 ## Table of Contents
-- [Payment System Task](#payment-system-task)
+- [Payment System]
     * [Technical requirements](#technical-requirements)
     * [Task](#task)
     * [Submission](#submission)
@@ -9,8 +9,6 @@
     * [Testing](#testing)
 - [Linter](#linter)
 - [Running the project locally](#Running-the-project-locally)
-
-## Payment System Task
 
 ### Technical requirements
 
@@ -125,8 +123,8 @@ Tests are located in the ```test``` directory with package definitions matching 
     2.1.1. Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
     Connect to a running server with a user that has grant privileges and execute
     ```
-    CREATE DATABASE taskpdb;
     CREATE USER 'taskpusr'@'%' IDENTIFIED BY 'task!@#';
+    CREATE DATABASE taskpdb;
     GRANT ALL PRIVILEGES ON taskpdb.* TO 'taskpusr'@'%';
     FLUSH PRIVILEGES;
     ```  
@@ -138,18 +136,24 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     docker-compose --profile mysql up
     ```
-    2.1.2. Set server IP instead of 192.168.122.1, DB name,Username, and password in application.properties and in application-cli.properties
+    2.1.2. Set server IP instead of 127.0.0.1, DB name,Username, and password in application.properties and in application-cli.properties
     ```
-    spring.datasource.username=taskpusr
-    spring.datasource.password=task!@#
-    spring.datasource.url=jdbc:mysql://192.168.122.1:3306/taskpdb
+    spring.datasource.url=${TASKP_DB_URL:jdbc:mysql://127.0.0.1:3306/taskpdb}
+    spring.datasource.username=${TASKP_DB_USER:taskpusr}
+    spring.datasource.password=${TASKP_DB_PASS:task!@#}
+    ```
+    or export as shell variables 
+    ```
+    export TASKP_DB_URL='jdbc:mysql://192.168.122.1:3306/taskpdb'
+    export TASKP_DB_USER='taskpusr'
+    export TASKP_DB_PASS='task!@#'
     ```
     2.2. PostgreSQL  
     2.2.1. Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
     Connect to a running server with a user that has SUPERUSER role and execute
     ```
-    CREATE DATABASE taskpdb;
     CREATE USER taskpusr WITH PASSWORD 'task!@#' NOCREATEDB LOGIN;
+    CREATE DATABASE taskpdb;
     ALTER DATABASE taskpdb OWNER TO taskpusr;
     ```  
     or create and run docker container manually
@@ -160,11 +164,17 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     docker-compose --profile postgres up
     ```
-    2.2.2. Set server IP instead of 192.168.122.1, DB name,Username, and password in application.properties and in application-cli.properties
+    2.2.2. Set server IP instead of 127.0.0.1, DB name,Username, and password in application.properties and in application-cli.properties
     ```
-    spring.datasource.username=taskpusr
-    spring.datasource.password=task!@#
-    spring.datasource.url=jdbc:postgresql://192.168.122.1:5432/taskpdb
+    spring.datasource.url=${TASKP_DB_URL:jdbc:postgresql://127.0.0.1:5432/taskpdb}
+    spring.datasource.username=${TASKP_DB_USER:taskpusr}
+    spring.datasource.password=${TASKP_DB_PASS:task!@#}
+    ```
+        or export as shell variables 
+    ```
+    export TASKP_DB_URL='jdbc:postgresql://192.168.122.1:5432/taskpdb'
+    export TASKP_DB_USER='taskpusr'
+    export TASKP_DB_PASS='task!@#'
     ```
 3. Load initial data  
     3.1. Load users from data/users.csv  
