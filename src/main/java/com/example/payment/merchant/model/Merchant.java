@@ -84,17 +84,26 @@ public final class Merchant implements Serializable {
     @JoinColumn(name = "merchant_id")
     private MerchantSum merchantSum = new MerchantSum(id);
 
+    /**
+     * Merchant users.
+     */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "merchant_user", joinColumns = { @JoinColumn(name = "merchant_id", referencedColumnName = "id") }, inverseJoinColumns = {
             @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true) })
     private Set<User> users;
 
+    /**
+     * Merchant transactions.
+     */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "merchant", cascade = CascadeType.ALL)
     private Set<Transaction> transactions;
 
     /**
-     * @return current merchant Id
+     * Used to add/remove users from Merchant.
      */
+    @Transient
+    private transient Set<String> usernamesSet;
+
     public long getId() {
         return id;
     }
@@ -168,9 +177,6 @@ public final class Merchant implements Serializable {
     public boolean getStatus() {
         return status;
     }
-
-    @Transient
-    private transient Set<String> usernamesSet;
 
     /**
      *

@@ -25,3 +25,17 @@ services:
       - POSTGRES_DB=taskpdb
     profiles:
     - postgres
+  taskp:
+    container_name: taskp
+    build:
+          context: .
+          dockerfile: Dockerfile
+    image: taskp:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - TASKP_DB_URL=jdbc:mysql://127.0.0.1:3306/taskpdb
+      - TASKP_DB_USER=taskpusr
+      - TASKP_DB_PASS=task!@#
+    profiles:
+    - taskp

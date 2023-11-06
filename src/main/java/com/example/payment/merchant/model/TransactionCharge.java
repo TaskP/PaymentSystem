@@ -30,4 +30,10 @@ public final class TransactionCharge extends Transaction {
             throw new ValidationException("Amount is null");
         }
     }
+
+    @Override
+    public TransactionType getType() {
+        return TransactionType.CHARGE;
+    }
+
 }

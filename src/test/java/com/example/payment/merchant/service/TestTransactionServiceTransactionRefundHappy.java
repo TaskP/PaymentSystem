@@ -74,7 +74,7 @@ class TestTransactionServiceTransactionRefundHappy {
         Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
         merchant = this.merchantService.create(merchant);
 
-        TransactionRefund transactionRefund = transactionFactory.getTransactionRefund(null, merchant, 1D, TransactionStatus.APPROVED, email, null, null);
+        TransactionRefund transactionRefund = transactionFactory.getTransactionRefund(merchant, 1D, TransactionStatus.APPROVED, email, null, null);
         transactionRefund = (TransactionRefund) transactionService.create(transactionRefund);
 
         Optional<Transaction> optTransaction = this.transactionService.findById(transactionRefund.getUuid());

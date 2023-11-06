@@ -7,13 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.TransactionSystemException;
 
 import com.example.payment.common.utils.IdUtils;
 import com.example.payment.iam.factory.UserFactory;
 import com.example.payment.iam.model.Role;
 import com.example.payment.merchant.factory.MerchantFactory;
 import com.example.payment.merchant.model.Merchant;
+
+import jakarta.validation.ValidationException;
 
 /**
  * MerchantService test cases. Negative scenarios.
@@ -27,6 +28,9 @@ class TestMerchantServiceNegative {
     @Autowired
     private MerchantService merchantService;
 
+    /**
+     * MerchantFactory.
+     */
     @Autowired
     private MerchantFactory merchantFactory;
 
@@ -61,6 +65,6 @@ class TestMerchantServiceNegative {
         merchant.addUser(userFactory.getUser(merchantId, name, name, Role.MERCHANT));
         final Exception exception = assertThrows(Exception.class, () -> this.merchantService.create(merchant));
         assertNotNull(exception);
-        assertEquals(TransactionSystemException.class, exception.getClass());
+        assertEquals(ValidationException.class, exception.getClass());
     }
 }

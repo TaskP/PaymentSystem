@@ -74,7 +74,7 @@ class TestTransactionServiceTransactionReversalHappy {
         Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
         merchant = this.merchantService.create(merchant);
 
-        TransactionReversal transactionReversal = transactionFactory.getTransactionReversal(null, merchant, TransactionStatus.APPROVED, email, null, null);
+        TransactionReversal transactionReversal = transactionFactory.getTransactionReversal(merchant, TransactionStatus.APPROVED, email, null, null);
         transactionReversal = (TransactionReversal) transactionService.create(transactionReversal);
 
         Optional<Transaction> optTransaction = this.transactionService.findById(transactionReversal.getUuid());

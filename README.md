@@ -9,6 +9,7 @@
     * [Testing](#testing)
 - [Linter](#linter)
 - [Running the project locally](#Running-the-project-locally)
+- [Docker](#docker)
 
 ### Technical requirements
 
@@ -106,7 +107,7 @@ Tests are located in the ```test``` directory with package definitions matching 
 - ```./gradlew checkStyleMain``` runs checks in main  
 - ```./gradlew checkStyleTest``` runs checks in test    
 
-## Running the project locally
+## Running the project
 
 1. Project setup  
     1.1. Clone repository  
@@ -118,9 +119,10 @@ Tests are located in the ```test``` directory with package definitions matching 
     cd PaymentSystem    
     ./gradlew build
     ```
+   
 2. Setup Database  
     2.1. MySQL or MariaDB    
-    2.1.1. Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
+    Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
     Connect to a running server with a user that has grant privileges and execute
     ```
     CREATE USER 'taskpusr'@'%' IDENTIFIED BY 'task!@#';
@@ -136,20 +138,8 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     docker-compose --profile mysql up
     ```
-    2.1.2. Set server IP instead of 127.0.0.1, DB name,Username, and password in application.properties and in application-cli.properties
-    ```
-    spring.datasource.url=${TASKP_DB_URL:jdbc:mysql://127.0.0.1:3306/taskpdb}
-    spring.datasource.username=${TASKP_DB_USER:taskpusr}
-    spring.datasource.password=${TASKP_DB_PASS:task!@#}
-    ```
-    or export as shell variables 
-    ```
-    export TASKP_DB_URL='jdbc:mysql://192.168.122.1:3306/taskpdb'
-    export TASKP_DB_USER='taskpusr'
-    export TASKP_DB_PASS='task!@#'
-    ```
     2.2. PostgreSQL  
-    2.2.1. Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
+    Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
     Connect to a running server with a user that has SUPERUSER role and execute
     ```
     CREATE USER taskpusr WITH PASSWORD 'task!@#' NOCREATEDB LOGIN;
@@ -164,20 +154,19 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     docker-compose --profile postgres up
     ```
-    2.2.2. Set server IP instead of 127.0.0.1, DB name,Username, and password in application.properties and in application-cli.properties
-    ```
-    spring.datasource.url=${TASKP_DB_URL:jdbc:postgresql://127.0.0.1:5432/taskpdb}
-    spring.datasource.username=${TASKP_DB_USER:taskpusr}
-    spring.datasource.password=${TASKP_DB_PASS:task!@#}
-    ```
-        or export as shell variables 
-    ```
-    export TASKP_DB_URL='jdbc:postgresql://192.168.122.1:5432/taskpdb'
-    export TASKP_DB_USER='taskpusr'
-    export TASKP_DB_PASS='task!@#'
-    ```
+    
+3. Build Docker image 	
+	```
+	docker build -t taskp .
+	``` 
+	or use the provided docker-compose.yml
+	```
+	docker-compose --profile taskp build
+	``` 
+	
 3. Load initial data  
-    3.1. Load users from data/users.csv  
+	3.1. Manually  
+    3.1.1 Load users from data/users.csv    
 	Format: Column 1 - Username, Column 2 - Full name, Column 3 - Password, Column 4 - Role, Column 5 (Optional) - Status  
 	Status of newly imported users is active unless there is Column 5 with case insensitive "false" or "inactive"  
  
@@ -186,21 +175,46 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     or
     ```
-    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
+    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.main.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
     ```
-    3.2. Load merchants from data/merchants.csv  
+    3.1.2. Load merchants from data/merchants.csv    
 	Format: Column 1 - Name, Column 2 - Description, Column 3 - Email, Column 4 (Optional) - Status  
-	Status of newly imported merchants is active unless there is Column 4 with case insensitive "false" or "inactive"  
- 
+	The status of newly imported merchants is set to "active" by default.  
+	If Column 4 contains "false" or "inactive" (case insensitive), the status is set to "inactive."  
+	A new user will be created for each merchant, and their username and password will be set to the lowercase of their email (if provided) or name. 
+	
     ```
     ./gradlew merchantImport -PCSVFile=data/merchants.csv
     ```
     or
     ```
-    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.AppCliMerchantImport org.springframework.boot.loader.PropertiesLauncher data/merchants.csv
+    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.main.AppCliMerchantImport org.springframework.boot.loader.PropertiesLauncher data/merchants.csv
     ```
-    
-        
-
+    3.2 Using docker
+    ```
+    docker run -it --rm --entrypoint /opt/taskp/import.sh taskp:latest
+    ```
+4. Start  
+	4.1. Via gradle  
+	```
+		./gradlew bootRun
+	```  
+	4.2. Command line  
+	```
+	java -jar build/libs/PaymentSystem-1.0.1.jar
+	```
+	 
+    4.3. In Docker  
+    ```
+    docker run --rm --name taskp -p 8080:8080 \
+	-e TASKP_DB_URL='jdbc:mysql://127.0.0.1:3306/taskpdb' \
+	-e TASKP_DB_USER='taskpusr' \
+	-e TASKP_DB_PASS='task!@#' \
+	-d taskp
+	```
+	or via docker-compose
+	```
+	docker-compose --profile taskp up
+	```
 
     

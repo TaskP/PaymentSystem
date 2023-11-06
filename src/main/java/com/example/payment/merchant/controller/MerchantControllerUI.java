@@ -32,6 +32,9 @@ import com.example.payment.merchant.service.MerchantService;
 @RequestMapping("/ui/merchant/merchant")
 public class MerchantControllerUI extends CommonControllerUI {
 
+    /**
+     * Logger.
+     */
     private static final Log LOG = LogFactory.getLog(MerchantControllerUI.class);
 
     /**
@@ -68,7 +71,7 @@ public class MerchantControllerUI extends CommonControllerUI {
     }
 
     private Page<Merchant> listPaginated(final int page, final String name) {
-        final int pageSize = 5;
+        final int pageSize = 10;
         final Pageable pageable = PageRequest.of(page - 1, pageSize);
         return merchantService.findByName(name, pageable);
     }

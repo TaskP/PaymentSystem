@@ -133,6 +133,10 @@ public class MerchantService {
         return formatOut(merchantRepository.findByUsersId(id));
     }
 
+    public Optional<Merchant> findByUserIdUnformatted(final long id) {
+        return merchantRepository.findByUsersId(id);
+    }
+
     private Merchant processUsernameSet(final Merchant merchant) {
         if (merchant == null || merchant.getUsernamesSet() == null) {
             return merchant;

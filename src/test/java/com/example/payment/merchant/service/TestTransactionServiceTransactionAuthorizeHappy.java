@@ -74,8 +74,7 @@ class TestTransactionServiceTransactionAuthorizeHappy {
         Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
         merchant = this.merchantService.create(merchant);
 
-        TransactionAuthorize transactionAuthorize = transactionFactory.getTransactionAuthorize(null, merchant, 1D, TransactionStatus.APPROVED, email, null,
-                null);
+        TransactionAuthorize transactionAuthorize = transactionFactory.getTransactionAuthorize(merchant, 1D, TransactionStatus.APPROVED, email, null, null);
         transactionAuthorize = (TransactionAuthorize) transactionService.create(transactionAuthorize);
 
         Optional<Transaction> optTransaction = this.transactionService.findById(transactionAuthorize.getUuid());

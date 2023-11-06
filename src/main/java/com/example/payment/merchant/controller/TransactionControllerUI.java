@@ -32,6 +32,9 @@ import com.example.payment.merchant.service.TransactionService;
 @RequestMapping("/ui/merchant/transaction")
 public class TransactionControllerUI extends CommonControllerUI {
 
+    /**
+     * Logger.
+     */
     private static final Log LOG = LogFactory.getLog(TransactionControllerUI.class);
 
     /**
@@ -59,7 +62,7 @@ public class TransactionControllerUI extends CommonControllerUI {
     }
 
     private Page<Transaction> listPaginated(final int page) {
-        final int pageSize = 5;
+        final int pageSize = 10;
         final Pageable pageable = PageRequest.of(page - 1, pageSize);
         return transactionService.findAll(pageable);
     }
@@ -75,10 +78,10 @@ public class TransactionControllerUI extends CommonControllerUI {
 
     @GetMapping("/{transactionId}")
     public ModelAndView show(@PathVariable("transactionId") final UUID transactionId) {
-        final Optional<Transaction> user = this.transactionService.findById(transactionId);
-        if (user.isPresent()) {
+        final Optional<Transaction> transaction = this.transactionService.findById(transactionId);
+        if (transaction.isPresent()) {
             final ModelAndView mav = new ModelAndView("merchant/transaction/view");
-            mav.addObject(user.get());
+            mav.addObject(transaction.get());
             return mav;
         }
         return error("Transaction not found");

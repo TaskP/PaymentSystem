@@ -32,6 +32,9 @@ import jakarta.validation.constraints.NotNull;
 @RequestMapping("/api/user")
 public class UserControllerREST extends CommonControllerRest {
 
+    /**
+     * Logger.
+     */
     private static final Log LOG = LogFactory.getLog(UserControllerREST.class);
 
     /**

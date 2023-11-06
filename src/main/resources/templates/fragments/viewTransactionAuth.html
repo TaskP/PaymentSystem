@@ -1,0 +1,21 @@
+<html>
+<body>
+	<div th:fragment="viewTransactionAuth">
+		<h2 class="ps-page-title">Transaction authorize</h2>
+		<div>
+			<div class="ps-form-group">
+				<label class="col-sm-12 ps-form-label">UUID</label>
+			    <div class="form-control ps-form-control-disabled" th:text="${transaction.uuid}">Default UUID</div>
+			</div>
+			<div class="ps-form-group">
+				<label class="col-sm-12 ps-form-label">Merchant ID</label>
+			    <div class="form-control ps-form-control-disabled" th:text="${transaction.merchantId}">Default merchant id</div>
+			</div>
+			<div class="ps-form-group">
+				<label class="col-sm-12 ps-form-label">Customer email</label>
+			    <div class="form-control ps-form-control-disabled" th:text="${transaction.customerEmail}">Default email</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

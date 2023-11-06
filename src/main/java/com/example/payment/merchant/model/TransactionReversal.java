@@ -29,4 +29,10 @@ public final class TransactionReversal extends Transaction {
             throw new ValidationException("Amount must be null");
         }
     }
+
+    @Override
+    public TransactionType getType() {
+        return TransactionType.REVERSAL;
+    }
+
 }

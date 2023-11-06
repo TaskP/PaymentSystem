@@ -25,4 +25,9 @@ public final class TransactionAuthorize extends Transaction {
             throw new ValidationException("Amount is null");
         }
     }
+
+    @Override
+    public TransactionType getType() {
+        return TransactionType.AUTORIZE;
+    }
 }

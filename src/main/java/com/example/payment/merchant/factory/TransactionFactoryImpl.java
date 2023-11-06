@@ -34,6 +34,21 @@ public class TransactionFactoryImpl implements TransactionFactory {
     @Autowired
     private Validator validator;
 
+    @Override
+    public ValidationException validate(final Transaction transaction) {
+        if (transaction == null) {
+            return new ValidationException("Transaction is null");
+        }
+        if (transaction.getUuid() == null) {
+            return new ValidationException("Invalid UUID");
+        }
+        final Set<ConstraintViolation<Transaction>> valResult = validator.validate(transaction);
+        if (valResult != null && valResult.size() != 0) {
+            return new ValidationException("Validation failed! Error:" + valResult);
+        }
+        return null;
+    }
+
     /**
      * Build new Transaction. Validate and throw exception if not valid.
      *
@@ -76,9 +91,7 @@ public class TransactionFactoryImpl implements TransactionFactory {
             throw new ValidationException("TransactionType not supported");
         }
 
-        if (uuid != null) {
-            ret.setUuid(uuid);
-        }
+        ret.setUuid(uuid);
         ret.setMerchant(merchant);
         ret.setAmount(amount);
         ret.setStatus(status);
@@ -86,9 +99,9 @@ public class TransactionFactoryImpl implements TransactionFactory {
         ret.setCustomerPhone(customerPhone);
         ret.setReferenceTransaction(referenceTransaction);
 
-        final Set<ConstraintViolation<Transaction>> valResult = validator.validate(ret);
-        if (valResult != null && valResult.size() != 0) {
-            throw new ValidationException("Validation failed! Error:" + valResult);
+        final ValidationException ex = validate(ret);
+        if (ex != null) {
+            throw ex;
         }
         return ret;
     }

@@ -7,12 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.TransactionSystemException;
 
 import com.example.payment.common.utils.IdUtils;
 import com.example.payment.iam.factory.UserFactory;
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
+
+import jakarta.validation.ValidationException;
 
 /**
  * UserService test cases. Negative scenarios.
@@ -54,7 +55,7 @@ class TestUserServiceNegative {
         user.setRole(System.currentTimeMillis()); // Setting invalid role
         final Exception exception = assertThrows(Exception.class, () -> userService.create(user));
         assertNotNull(exception);
-        assertEquals(TransactionSystemException.class, exception.getClass());
+        assertEquals(ValidationException.class, exception.getClass());
     }
 
 }

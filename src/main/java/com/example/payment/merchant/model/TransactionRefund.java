@@ -29,4 +29,9 @@ public final class TransactionRefund extends Transaction {
             throw new ValidationException("Amount is null");
         }
     }
+
+    @Override
+    public TransactionType getType() {
+        return TransactionType.REFUND;
+    }
 }

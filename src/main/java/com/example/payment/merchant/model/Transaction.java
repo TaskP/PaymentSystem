@@ -9,8 +9,6 @@ import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -31,13 +29,17 @@ import jakarta.validation.constraints.Size;
 @Table(name = "transaction")
 public class Transaction implements Serializable {
 
+    public TransactionType getType() {
+        return TransactionType.UKNOWN;
+    }
+
     private static final long serialVersionUID = 1L;
 
     /**
      * Transaction uuid.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    // @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uuid;
 
     /**
@@ -107,13 +109,6 @@ public class Transaction implements Serializable {
     private long epoch = System.currentTimeMillis();
 
     /**
-     * Default no-arg constructor.
-     */
-    public Transaction() {
-        super();
-    }
-
-    /**
      *
      * Get current Transaction uuid.
      *
@@ -127,9 +122,11 @@ public class Transaction implements Serializable {
      * Set Transaction uuid.
      *
      * @param idIn Transaction uuid to set
+     * @return
      */
-    public void setUuid(final UUID idIn) {
+    public Transaction setUuid(final UUID idIn) {
         this.uuid = idIn;
+        return this;
     }
 
     /**
@@ -194,11 +191,24 @@ public class Transaction implements Serializable {
         return status;
     }
 
+    public TransactionStatus getStatusType() {
+        return TransactionStatus.parse(getStatus());
+    }
+
     /**
      * @param statusIn
      */
     public void setStatus(final byte statusIn) {
         this.status = statusIn;
+    }
+
+    public void setStatusType(final TransactionStatus statusType) {
+        setStatus(statusType == null ? 0 : statusType.getStatusId());
+    }
+
+    public void setStatusType(final String statusIn) {
+        setStatusType(TransactionStatus.parse(statusIn));
+
     }
 
     /**
@@ -287,6 +297,13 @@ public class Transaction implements Serializable {
      */
     public void setEpoch(final long epochIn) {
         this.epoch = epochIn;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction [Type=" + getType() + "uuid=" + uuid + ", merchantId=" + merchantId + ", merchant=" + merchant + ", amount=" + amount + ", status="
+                + status + ", customerEmail=" + customerEmail + ", customerPhone=" + customerPhone + ", referenceId=" + referenceId + ", referenceTransaction="
+                + referenceTransaction + ", epoch=" + epoch + "]";
     }
 
 }

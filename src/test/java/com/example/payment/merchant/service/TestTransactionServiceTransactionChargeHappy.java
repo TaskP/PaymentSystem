@@ -74,7 +74,7 @@ class TestTransactionServiceTransactionChargeHappy {
         Merchant merchant = merchantFactory.getMerchant(merchantId, name, email);
         merchant = this.merchantService.create(merchant);
 
-        TransactionCharge transactionCharge = transactionFactory.getTransactionCharge(null, merchant, 1D, TransactionStatus.APPROVED, email, null, null);
+        TransactionCharge transactionCharge = transactionFactory.getTransactionCharge(merchant, 1D, TransactionStatus.APPROVED, email, null, null);
         transactionCharge = (TransactionCharge) transactionService.create(transactionCharge);
 
         Optional<Transaction> optTransaction = this.transactionService.findById(transactionCharge.getUuid());

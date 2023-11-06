@@ -5,8 +5,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.example.payment.common.utils.StringUtils;
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
 
@@ -27,6 +29,12 @@ public class UserFactoryImpl implements UserFactory {
     @Autowired
     private Validator validator;
 
+    /**
+     * Autowired PasswordEncoder.
+     */
+    @Autowired(required = false)
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public ValidationException validate(final User user) {
         if (user == null) {
@@ -46,6 +54,17 @@ public class UserFactoryImpl implements UserFactory {
             return new ValidationException("Validation failed! Error:" + valResult);
         }
         return null;
+    }
+
+    @Override
+    public String encodePassword(final String password) {
+        if (StringUtils.isEmpty(password)) {
+            return password;
+        }
+        if (passwordEncoder == null) {
+            return password;
+        }
+        return passwordEncoder.encode(password);
     }
 
     /**

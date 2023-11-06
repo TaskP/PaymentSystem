@@ -6,6 +6,7 @@
 	--color-blue-main-hover: #4d88bc;
 	--color-blue-main-dark: #0063ba;
  	--color-blue-grey-light: #8da6bf;
+ 	--color-grey-light: #f6f6f6;
  	--color-red: #dc3545;
  	--color-red-hover: #de5966;
 }
@@ -133,6 +134,20 @@
 	background: var(--color-red-hover);
 }
 
+.ps-form-group{
+	display: block;
+	width: 100%;
+	margin-top: 10px;
+}  
+
+.ps-form-control-disabled{
+	background-color: var(--color-grey-light);
+}
+
+.ps-form-label{
+	font-weight: bold;
+	margin: 0px 0px 5px 0px; }
+	
 .ps-table thead > tr > th {
   background-color: var(--color-blue-main);
   color: white; }
@@ -142,3 +157,5 @@
 	  
 .ps-pager .ps-pager-nav{
 	  margin: 0px 5px; }
+
+}

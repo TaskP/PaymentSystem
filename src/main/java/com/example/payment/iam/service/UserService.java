@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.payment.iam.factory.UserFactory;
@@ -35,12 +34,6 @@ public class UserService {
      */
     @Autowired
     private UserFactory userFactory;
-
-    /**
-     * Autowired PasswordEncoder.
-     */
-    @Autowired(required = false)
-    private PasswordEncoder passwordEncoder;
 
     /**
      * Strip user password.
@@ -138,8 +131,8 @@ public class UserService {
         if (ex.isPresent()) {
             throw new EntityExistsException("User exists! Username:" + user.getUsername());
         }
-        if (passwordEncoder != null && user.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getPassword() != null) {
+            user.setPassword(userFactory.encodePassword(user.getPassword()));
         }
         return formatOut(userRepository.save(user));
     }
@@ -168,10 +161,8 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(ex.get().getPassword());
         }
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            if (passwordEncoder != null && !user.getPassword().equals(ex.get().getPassword())) {
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
-            }
+        if (user.getPassword() != null && !user.getPassword().isEmpty() && !user.getPassword().equals(ex.get().getPassword())) {
+            user.setPassword(userFactory.encodePassword(user.getPassword()));
         }
         return formatOut(userRepository.save(user));
     }

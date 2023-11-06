@@ -4,6 +4,11 @@ package com.example.payment.merchant.model;
  * Transaction Types.
  */
 public enum TransactionType {
+
+    /**
+     * Uknown. Case when TransactionType can not be determined.
+     */
+    UKNOWN(0, "Uknown"),
     /**
      * Authorize.
      */

@@ -32,6 +32,9 @@ import com.example.payment.iam.service.UserService;
 @RequestMapping("/ui/user")
 public class UserControllerUI extends CommonControllerUI {
 
+    /**
+     * Logger.
+     */
     private static final Log LOG = LogFactory.getLog(UserControllerUI.class);
 
     /**
@@ -68,7 +71,7 @@ public class UserControllerUI extends CommonControllerUI {
     }
 
     private Page<User> listPaginated(final int page, final String username) {
-        final int pageSize = 5;
+        final int pageSize = 10;
         final Pageable pageable = PageRequest.of(page - 1, pageSize);
         return userService.findByUsername(username, pageable);
     }

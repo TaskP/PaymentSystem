@@ -34,17 +34,20 @@ import com.example.payment.merchant.service.MerchantService;
 @Profile("cli")
 public class AppCliMerchantImport implements CommandLineRunner {
 
+    /**
+     * MerchantFactory.
+     */
     @Autowired
     private MerchantFactory merchantFactory;
 
+    /**
+     * UserFactory.
+     */
     @Autowired
     private UserFactory userFactory;
 
     /**
-     * Merchant service.
-     *
-     * @see com.example.payment.merchant.service.MerchantService
-     *
+     * MerchantService.
      */
     @Autowired
     private MerchantService merchantService;
@@ -92,7 +95,7 @@ public class AppCliMerchantImport implements CommandLineRunner {
                 user.setUsername(merchant.getName());
             }
 
-            user.setFullName(merchant.getName()).setPassword(merchant.getName()).setRole(Role.MERCHANT);
+            user.setFullName(merchant.getName()).setPassword(userFactory.encodePassword(user.getUsername())).setRole(Role.MERCHANT);
 
             merchant.addUser(user);
 

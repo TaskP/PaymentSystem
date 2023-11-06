@@ -30,6 +30,9 @@ import com.example.payment.iam.service.UserService;
 @Profile("cli")
 public class AppCliUserImport implements CommandLineRunner {
 
+    /**
+     * UserFactory.
+     */
     @Autowired
     private UserFactory userFactory;
 

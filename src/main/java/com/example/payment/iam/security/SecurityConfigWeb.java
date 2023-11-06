@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.example.payment.iam.model.Role;
@@ -42,9 +43,10 @@ public class SecurityConfigWeb {
                 )
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
-                .csrf((csrf) -> csrf
-                        .ignoringRequestMatchers("/api/*"))
-                ;
+                .csrf(AbstractHttpConfigurer::disable);
+
+                //.csrf((csrf) -> csrf.ignoringRequestMatchers("/api/*"))
+                //;
         /*
         http.authorizeHttpRequests(
                 (authorize) -> authorize

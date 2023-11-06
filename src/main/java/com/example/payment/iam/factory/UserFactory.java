@@ -43,6 +43,10 @@ public interface UserFactory {
         return user.setId(getId());
     }
 
+    default String encodePassword(final String password) {
+        return password;
+    }
+
     /**
      * Builds new User with all fields. Throws exception if id is zero, username is
      * null or empty or role is null.

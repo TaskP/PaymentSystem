@@ -26,5 +26,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     // @Query("SELECT transaction FROM Transaction transaction where merchantId=?")
     @Transactional(readOnly = true)
-    Page<Transaction> findByMerchantId(final long merchantId, Pageable pageable);
+    Page<Transaction> findByMerchantId(long merchantId, Pageable pageable);
+
+    @Transactional(readOnly = false)
+    void deleteByEpochLessThanEqual(long epoch);
 }
