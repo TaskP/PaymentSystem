@@ -117,7 +117,7 @@ Tests are located in the ```test``` directory with package definitions matching 
     1.2. Build project  
     ```  
     cd PaymentSystem    
-    ./gradlew build
+    ./gradlew build -x test -x check
     ```
    
 2. Setup Database  
@@ -197,7 +197,7 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     docker run -it --rm --entrypoint /opt/taskp/import.sh taskp:latest
     ```
-5. Start  
+5. Start local  
 	5.1. Via gradle  
 	```
 		./gradlew bootRun
@@ -219,5 +219,42 @@ Tests are located in the ```test``` directory with package definitions matching 
 	```
 	docker-compose --profile taskp up
 	```
+6. Deploy to remote host  
+	6.1. Prepare remote linux host  
+	* Install docker and docker-compose and start docker  
+	* Create virtual interface add assign ip
+	```
+	#on remote
+	ip link add virbr0 type bridge
+	ip -4 addr add 192.168.122.1/24 dev virbr0
+	ip link set dev virbr0 up
+	```
+	* Create and run MySQL
+	```
+	#on remote
+	docker run --name mysql -p 3306:3306 -e MYSQL_USER=taskpusr -e MYSQL_PASSWORD='task!@#' -e MYSQL_ROOT_PASSWORD=rPwd931 -e MYSQL_DATABASE=taskpdb -d mysql:8.2
+	```
+	* Load and start image	
+	```
+	#on remote
+	mkdir -p /opt/taskp/docker/image
+	
+	#on local
+	rsync -t --checksum --ignore-times --progress -avz -e 'ssh ' "build/taskp.tar" root@remote:/opt/taskp/docker/image/taskp.tar
+	
+	#on remote
+	docker load -i /opt/taskp/docker/image/taskp.tar
+	
+	docker run --name taskp -p 8080:8080 \
+	-e TASKP_DB_URL='jdbc:mysql://192.168.122.1:3306/taskpdb' \
+	-e TASKP_DB_USER='taskpusr' \
+	-e TASKP_DB_PASS='task!@#' \
+	-d taskp
+	
+	#on remote Load data
+	docker exec -it taskp /opt/taskp/import.sh
+	
+	```
+	  
 
     

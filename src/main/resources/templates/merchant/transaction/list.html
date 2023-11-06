@@ -16,6 +16,7 @@
 		    <th>Amount</th>
 		    <th>Status</th>
 		    <th>Reference</th>
+		    <th>Created on</th>
 		  </tr>
 		  </thead>
 		  <tbody>
@@ -29,6 +30,7 @@
 		    <td th:text="${transaction.amount}"/>
 		    <td th:text="${transaction.statusType}"/>
 		    <td th:text="${transaction.referenceId}"/>
+		    <td th:text="${#dates.format(transaction.epoch, 'dd/MM/yyyy HH:mm:ss')}"/>
 		  </tr>
 		  </tbody>
 		</table>
