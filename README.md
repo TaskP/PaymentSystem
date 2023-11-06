@@ -164,11 +164,19 @@ Tests are located in the ```test``` directory with package definitions matching 
 	docker-compose --profile taskp build
 	``` 
 	
-3. Load initial data  
-	3.1. Manually  
-    3.1.1 Load users from data/users.csv    
+4. Load initial data      
+	4.1. Format  
+	4.1.1. Users    
 	Format: Column 1 - Username, Column 2 - Full name, Column 3 - Password, Column 4 - Role, Column 5 (Optional) - Status  
 	Status of newly imported users is active unless there is Column 5 with case insensitive "false" or "inactive"  
+	4.1.2. Merchants  
+	Format: Column 1 - Name, Column 2 - Description, Column 3 - Email, Column 4 (Optional) - Status  
+	The status of newly imported merchants is set to "active" by default.  
+	If Column 4 contains "false" or "inactive" (case insensitive), the status is set to "inactive."  
+	A new user will be created for each merchant, and their username and password will be set to the lowercase of their email (if provided) or name. 
+
+	4.2. Manually  
+    4.2.1. Load users from data/users.csv    
  
     ```
     ./gradlew userImport -PCSVFile=data/users.csv
@@ -177,12 +185,7 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.main.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
     ```
-    3.1.2. Load merchants from data/merchants.csv    
-	Format: Column 1 - Name, Column 2 - Description, Column 3 - Email, Column 4 (Optional) - Status  
-	The status of newly imported merchants is set to "active" by default.  
-	If Column 4 contains "false" or "inactive" (case insensitive), the status is set to "inactive."  
-	A new user will be created for each merchant, and their username and password will be set to the lowercase of their email (if provided) or name. 
-	
+    4.2.2. Load merchants from data/merchants.csv    
     ```
     ./gradlew merchantImport -PCSVFile=data/merchants.csv
     ```
@@ -190,21 +193,21 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.main.AppCliMerchantImport org.springframework.boot.loader.PropertiesLauncher data/merchants.csv
     ```
-    3.2 Using docker
+    4.3. Using docker  
     ```
     docker run -it --rm --entrypoint /opt/taskp/import.sh taskp:latest
     ```
-4. Start  
-	4.1. Via gradle  
+5. Start  
+	5.1. Via gradle  
 	```
 		./gradlew bootRun
 	```  
-	4.2. Command line  
+	5.2. Command line  
 	```
 	java -jar build/libs/PaymentSystem-1.0.1.jar
 	```
 	 
-    4.3. In Docker  
+    5.3. In Docker  
     ```
     docker run --rm --name taskp -p 8080:8080 \
 	-e TASKP_DB_URL='jdbc:mysql://127.0.0.1:3306/taskpdb' \
