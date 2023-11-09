@@ -1,9 +1,7 @@
 package com.example.payment.iam.model;
 
 import java.io.Serializable;
-import java.util.Set;
 
-import com.example.payment.common.utils.BitUtils;
 import com.example.payment.common.utils.StringUtils;
 
 import jakarta.persistence.Column;
@@ -64,11 +62,11 @@ public final class User implements Serializable {
     private String password;
 
     /**
-     * Roles. Bitmask with user's roles
+     * Role value.
      */
     @Column(nullable = false)
     @RoleValidation
-    private long role;
+    private byte role;
 
     /**
      * Status: active/inactive (true/false).
@@ -123,49 +121,24 @@ public final class User implements Serializable {
 
     /**
      *
-     * @return role
+     * @return roleValue
      */
-    public long getRole() {
+    public byte getRoleValue() {
         return role;
     }
 
-    public Set<Role> getRoles() {
-        return Role.toRoles(getRole());
-    }
-
-    public User setRole(final long roleIn) {
+    public User setRoleValue(final byte roleIn) {
         this.role = roleIn;
         return this;
     }
 
+    public Role getRole() {
+        return Role.parse(getRoleValue());
+    }
+
     public User setRole(final Role roleIn) {
-        setRole(roleIn == null ? 0 : roleIn.getValue());
+        setRoleValue(roleIn == null ? 0 : roleIn.getValue());
         return this;
-    }
-
-    public void setRoles(final Set<Role> roles) {
-        if (roles == null || roles.size() == 0) {
-            setRole(0L);
-            return;
-        }
-        for (final Role role : roles) {
-            setRole(BitUtils.setBit(role.getBitPosition(), getRole()));
-        }
-    }
-
-    public void setRoles(final String roles) {
-        if (roles == null || roles.length() == 0) {
-            setRole(0L);
-            return;
-        }
-        final String[] rolesSplit = roles.split(",");
-        for (final String role : rolesSplit) {
-            final Role roleParsed = Role.parse(role);
-            if (roleParsed == null) {
-                continue;
-            }
-            setRole(BitUtils.setBit(roleParsed.getBitPosition(), getRole()));
-        }
     }
 
     /**
@@ -191,7 +164,7 @@ public final class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", username=" + username + ", fullName=" + fullName + ", password=" + password + ", role=" + role + ", status=" + status
+        return "User [id=" + id + ", username=" + username + ", fullName=" + fullName + ", password=" + password + ", role=" + getRole() + ", status=" + status
                 + "]";
     }
 

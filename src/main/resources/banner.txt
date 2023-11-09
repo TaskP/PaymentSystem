@@ -1,6 +1,6 @@
 
 
-                     Payment System
+                     Payment System ${application.version}
                      
           Java Home :: ${java.home}                              
        Java Version :: ${java.version}

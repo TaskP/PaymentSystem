@@ -8,12 +8,12 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Merchant Spring Boot configuration.
+ * Merchant Spring Boot configuration. We must not include cron package here in
+ * order to avoid scheduling in CLI
  */
 @SpringBootConfiguration
 @EntityScan(basePackages = { "com.example.payment.merchant.model" })
-@ComponentScan(basePackages = { "com.example.payment.merchant.controller", "com.example.payment.merchant.cron", "com.example.payment.merchant.factory",
-        "com.example.payment.merchant.service" })
+@ComponentScan(basePackages = { "com.example.payment.merchant.controller", "com.example.payment.merchant.factory", "com.example.payment.merchant.service" })
 @EnableJpaRepositories(basePackages = { "com.example.payment.merchant.repository" })
 @EnableAsync
 @EnableScheduling

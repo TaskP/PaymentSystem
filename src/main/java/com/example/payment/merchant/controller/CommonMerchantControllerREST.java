@@ -40,7 +40,7 @@ public class CommonMerchantControllerREST extends CommonControllerRest {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         final User user = ((UserDetailsImpl) userDetails).getUser();
-        if (!Role.MERCHANT.is(user.getRole())) {
+        if (Role.MERCHANT.getValue() != user.getRoleValue()) {
             if (getLog() != null) {
                 getLog().warn(caller + " User does not have Role Merchant. UserId:" + user.getId());
             }

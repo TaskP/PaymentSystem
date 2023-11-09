@@ -1,5 +1,5 @@
 ## Table of Contents
-- [Payment System]
+- Payment System
     * [Technical requirements](#technical-requirements)
     * [Task](#task)
     * [Submission](#submission)
@@ -7,9 +7,14 @@
     * [Structure](#structure)
     * [Configuration](#configuration)
     * [Testing](#testing)
-- [Linter](#linter)
-- [Running the project locally](#Running-the-project-locally)
-- [Docker](#docker)
+    * [Linter](#linter)
+- [Project setup](#project-setup)
+- [Database setup](#database-setup)
+- [Test setup](#test-setup)
+- [Check build](#check-build)
+- [Build Docker image](#build-docker-image)
+- [Load initial data](#load-initial-data)
+- [API](#api)
 
 ### Technical requirements
 
@@ -107,55 +112,69 @@ Tests are located in the ```test``` directory with package definitions matching 
 - ```./gradlew checkStyleMain``` runs checks in main  
 - ```./gradlew checkStyleTest``` runs checks in test    
 
-## Running the project
-
-1. Project setup  
-    1.1. Clone repository  
+## Project setup    
+1. Clone repository  
     ```
     git clone https://github.com/TaskP/PaymentSystem PaymentSystem
     ```  
-    1.2. Build project  
-    ```  
-    cd PaymentSystem    
+2. Build project - we build project excluding checks and tests since we did not setup database yet   
+    ```
+    cd PaymentSystem  
     ./gradlew build -x test -x check
     ```
    
-2. Setup Database  
-    2.1. MySQL or MariaDB    
+## Database setup  
+1. MySQL or MariaDB    
     Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
-    Connect to a running server with a user that has grant privileges and execute
+    Connect to a running server with a user that has grant privileges and execute  
+	```  
+	CREATE USER 'taskpusr'@'%' IDENTIFIED BY 'task!@#';  
+	CREATE DATABASE taskpdb;  
+	GRANT ALL PRIVILEGES ON taskpdb.* TO 'taskpusr'@'%';  
+	FLUSH PRIVILEGES;  
+	```  
+    or create and run docker container manually  
     ```
-    CREATE USER 'taskpusr'@'%' IDENTIFIED BY 'task!@#';
-    CREATE DATABASE taskpdb;
-    GRANT ALL PRIVILEGES ON taskpdb.* TO 'taskpusr'@'%';
-    FLUSH PRIVILEGES;
-    ```  
-    or create and run docker container manually
-    ```
-    docker run --name mysql -p 3306:3306 -e MYSQL_USER=taskpusr -e MYSQL_PASSWORD='task!@#' -e MYSQL_ROOT_PASSWORD=rPwd931 -e MYSQL_DATABASE=taskpdb -d mysql:8.2
+    docker run --name mysql -p 3306:3306 -e MYSQL_USER=taskpusr -e MYSQL_PASSWORD='task!@#' -e MYSQL_ROOT_PASSWORD=rPwd931 -e MYSQL_DATABASE=taskpdb -d mysql:8.2  
     ```   
-    or use the provided docker-compose.yml
+    or use the provided docker-compose.yml  
     ```
-    docker-compose --profile mysql up
+    docker-compose --profile mysql up  
     ```
-    2.2. PostgreSQL  
+2. PostgreSQL  
     Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
-    Connect to a running server with a user that has SUPERUSER role and execute
+    Connect to a running server with a user that has SUPERUSER role and execute  
     ```
-    CREATE USER taskpusr WITH PASSWORD 'task!@#' NOCREATEDB LOGIN;
-    CREATE DATABASE taskpdb;
-    ALTER DATABASE taskpdb OWNER TO taskpusr;
+    CREATE USER taskpusr WITH PASSWORD 'task!@#' NOCREATEDB LOGIN;  
+    CREATE DATABASE taskpdb;  
+    ALTER DATABASE taskpdb OWNER TO taskpusr;  
     ```  
-    or create and run docker container manually
+    or create and run docker container manually  
     ```
-	docker run --name postgres -p 5432:5432 -e POSTGRES_USER=taskpusr -e POSTGRES_PASSWORD='task!@#' -e POSTGRES_DB=taskpdb -d postgres:16.0
+	docker run --name postgres -p 5432:5432 -e POSTGRES_USER=taskpusr -e POSTGRES_PASSWORD='task!@#' -e POSTGRES_DB=taskpdb -d postgres:16.0  
     ```   
-    or use the provided docker-compose.yml
+    or use the provided docker-compose.yml  
     ```
-    docker-compose --profile postgres up
+    docker-compose --profile postgres up  
     ```
+
+## Check build	  
+1. Set database connection properties as environment variables
+	```
+	export TASKP_DB_URL='jdbc:mysql://127.0.0.1:3306/taskpdb'
+	export TASKP_DB_USER='taskpusr'
+	export TASKP_DB_PASS='task!@#'
+2. Do check
+	```
+	./gradlew check
+	``` 
     
-3. Build Docker image 	
+## Build Docker image
+1. Build project 	
+	```
+	./gradlew build
+	``` 
+2. Build image
 	```
 	docker build -t taskp .
 	``` 
@@ -164,97 +183,142 @@ Tests are located in the ```test``` directory with package definitions matching 
 	docker-compose --profile taskp build
 	``` 
 	
-4. Load initial data      
-	4.1. Format  
-	4.1.1. Users    
+## Load initial data      
+1. Format  
+	1.1. Users    
 	Format: Column 1 - Username, Column 2 - Full name, Column 3 - Password, Column 4 - Role, Column 5 (Optional) - Status  
 	Status of newly imported users is active unless there is Column 5 with case insensitive "false" or "inactive"  
-	4.1.2. Merchants  
+	1.2. Merchants  
 	Format: Column 1 - Name, Column 2 - Description, Column 3 - Email, Column 4 (Optional) - Status  
 	The status of newly imported merchants is set to "active" by default.  
 	If Column 4 contains "false" or "inactive" (case insensitive), the status is set to "inactive."  
 	A new user will be created for each merchant, and their username and password will be set to the lowercase of their email (if provided) or name. 
 
-	4.2. Manually  
-    4.2.1. Load users from data/users.csv    
- 
+2. Manually  
+    2.1. Load users from data/users.csv    
     ```
-    ./gradlew userImport -PCSVFile=data/users.csv
+    ./gradlew userImport -PCSVFile=data/users.csv  
     ```
-    or
+    or  
     ```
-    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.main.AppCliUserImport org.springframework.boot.loader.PropertiesLauncher data/users.csv
+    java -cp build/libs/PaymentSystem.jar -Dspring.profiles.active=cli \  
+    -Dloader.main=com.example.payment.app.main.AppCliUserImport \  
+    org.springframework.boot.loader.PropertiesLauncher data/users.csv
     ```
-    4.2.2. Load merchants from data/merchants.csv    
+    2.2. Load merchants from data/merchants.csv    
     ```
-    ./gradlew merchantImport -PCSVFile=data/merchants.csv
+    ./gradlew merchantImport -PCSVFile=data/merchants.csv  
     ```
-    or
+    or  
     ```
-    java -cp build/libs/PaymentSystem-1.0.1.jar -Dspring.profiles.active=cli -Dloader.main=com.example.payment.app.main.AppCliMerchantImport org.springframework.boot.loader.PropertiesLauncher data/merchants.csv
+    java -cp build/libs/PaymentSystem.jar -Dspring.profiles.active=cli \  
+    -Dloader.main=com.example.payment.app.main.AppCliMerchantImport \  
+    org.springframework.boot.loader.PropertiesLauncher data/merchants.csv  
     ```
-    4.3. Using docker  
+3. Using docker  
     ```
     docker run -it --rm --entrypoint /opt/taskp/import.sh taskp:latest
     ```
-5. Start local  
-	5.1. Via gradle  
+## Start local  
+1. Via gradle  
 	```
-		./gradlew bootRun
+	./gradlew bootRun
 	```  
-	5.2. Command line  
+2. Command line  
 	```
-	java -jar build/libs/PaymentSystem-1.0.1.jar
+	java -jar build/libs/PaymentSystem.jar
 	```
 	 
-    5.3. In Docker  
+3. In Docker  
     ```
-    docker run --rm --name taskp -p 8080:8080 \
-	-e TASKP_DB_URL='jdbc:mysql://127.0.0.1:3306/taskpdb' \
-	-e TASKP_DB_USER='taskpusr' \
-	-e TASKP_DB_PASS='task!@#' \
+    docker run --rm --name taskp -p 8080:8080 \  
+	-e TASKP_DB_URL='jdbc:mysql://127.0.0.1:3306/taskpdb' \  
+	-e TASKP_DB_USER='taskpusr' \  
+	-e TASKP_DB_PASS='task!@#' \  
 	-d taskp
 	```
 	or via docker-compose
 	```
 	docker-compose --profile taskp up
 	```
-6. Deploy to remote host  
-	6.1. Prepare remote linux host  
-	* Install docker and docker-compose and start docker  
-	* Create virtual interface add assign ip
+## Deploy to remote host  
+1. Prepare remote linux host  
+2. Install docker and docker-compose and start docker   
+3. Create virtual interface add assign ip  
 	```
 	#on remote
 	ip link add virbr0 type bridge
 	ip -4 addr add 192.168.122.1/24 dev virbr0
 	ip link set dev virbr0 up
+	```   
+4. Create and run MySQL container  
 	```
-	* Create and run MySQL
+	#on remote	
+	docker run --name mysql -p 3306:3306 \  
+	-e MYSQL_USER=taskpusr \  
+	-e MYSQL_PASSWORD='task!@#' \  
+	-e MYSQL_ROOT_PASSWORD=rPwd931 \  
+	-e MYSQL_DATABASE=taskpdb -d mysql:8.2
 	```
-	#on remote
-	docker run --name mysql -p 3306:3306 -e MYSQL_USER=taskpusr -e MYSQL_PASSWORD='task!@#' -e MYSQL_ROOT_PASSWORD=rPwd931 -e MYSQL_DATABASE=taskpdb -d mysql:8.2
-	```
-	* Load and start image	
+5. Load and start image
+
 	```
 	#on remote
 	mkdir -p /opt/taskp/docker/image
-	
-	#on local
+	```
+		
+	```
+	#on local  
 	rsync -t --checksum --ignore-times --progress -avz -e 'ssh ' "build/taskp.tar" root@remote:/opt/taskp/docker/image/taskp.tar
+	```
 	
+	```
 	#on remote
 	docker load -i /opt/taskp/docker/image/taskp.tar
 	
-	docker run --name taskp -p 8080:8080 \
-	-e TASKP_DB_URL='jdbc:mysql://192.168.122.1:3306/taskpdb' \
-	-e TASKP_DB_USER='taskpusr' \
-	-e TASKP_DB_PASS='task!@#' \
+	docker run --name taskp -p 8080:8080 \  
+	-e TASKP_DB_URL='jdbc:mysql://192.168.122.1:3306/taskpdb' \  
+	-e TASKP_DB_USER='taskpusr' \  
+	-e TASKP_DB_PASS='task!@#' \  
 	-d taskp
-	
-	#on remote Load data
-	docker exec -it taskp /opt/taskp/import.sh
-	
 	```
-	  
-
-    
+	```
+	#on remote Load data
+	docker exec -it taskp /opt/taskp/import.sh	
+	```
+	
+## API 	  
+1. Prepare environment. Export variables url, username and password with administrator role and merchant username and password  
+	```
+	export TASK_URL="http://127.0.0.1:8080"
+	export ADMIN_AUTH='root:root!@#'
+	export MERCHANT_AUTH='acme@example.com:acme@example.com'
+	```
+2. Users - supports both urls "/api/user" and "/api/users"  
+	2.1. List users. Method GET.  
+	```
+	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/user
+	```
+	or  
+	```
+	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/users  
+	```n	2.2. Find User by username. If username is null or empty then lists all users. Method GET.  	
+	```
+	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/users?username=root
+	```
+	2.3. Create user. If id is not set then a new one is set internally. Method POST. On success returns an HTTP 201 (Created), on duplicate user then returns HTTP 409 Conflict  
+	```
+	curl -k -v -X POST --user ${ADMIN_AUTH} ${TASK_URL}/api/users \
+-H 'Content-Type: application/json' \
+-d '{"id":1698709109326709,"username":"CurlTest","fullName":"Merchant","password":"merchant!@#","role":6,"status":true}'
+    ```
+    2.4. Update user. Method PUT. On success returns an HTTP 200 (OK) status code. On user not found returns HTTP 404 Not found. On duplicate user error returns HTTP 409 Conflict  
+    ```
+	curl -k -v -X PUT --user ${ADMIN_AUTH} ${TASK_URL}/api/users/1698709109326709 \
+	-H 'Content-Type: application/json' \
+	-d '{"id":1698709109326709,"username":"CurlTestUpdate","fullName":"Merchant Update","password":null,"role":4,"status":true}'
+    ```
+	2.5. Delete user by user id. Method: DELETE. On success returns an HTTP 204 (NO CONTENT) status code. On user not found returns HTTP 404 Not found.  On user in user(constraint violation) returns HTTP 400 Bad request
+    ```
+    curl -k -v -X DELETE --user ${ADMIN_AUTH} ${TASK_URL}/api/users/1698709109326709
+    ```

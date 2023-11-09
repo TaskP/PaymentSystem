@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
  * Application Main.
  *
  */
-@ComponentScan(basePackages = { "com.example.payment.app.config" })
+@ComponentScan(basePackages = { "com.example.payment.app.config", "com.example.payment.merchant.cron" })
 @SpringBootApplication()
 @Profile("default") // Execute when 'default' profile is active
 public class AppWeb {

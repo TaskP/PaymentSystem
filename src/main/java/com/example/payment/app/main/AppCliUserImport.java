@@ -86,7 +86,7 @@ public class AppCliUserImport implements CommandLineRunner {
                 }
             }
             try {
-                user.setRole(Long.parseLong(row[ixRole]));
+                user.setRoleValue(Byte.parseByte(row[ixRole]));
             } catch (final NumberFormatException e) {
                 throw new IllegalArgumentException("Error: 2010 - Invalid argument! Invalid role on row " + r, e);
             }

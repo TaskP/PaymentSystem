@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
-    public String index(final Principal principal) {
-        // return principal != null ? "home" : "login";
-        return "home";
+    @GetMapping(path = { "/", "/bs", "/index.html", "/indexbs.html" })
+    public String bootStrap(final Principal principal) {
+        return "homebs";
     }
+
+    @GetMapping(path = { "/rjs", "/indexrjs.html" })
+    public String reactJS(final Principal principal) {
+        return "error";
+    }
+
 }

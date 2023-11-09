@@ -49,11 +49,13 @@ public class UserDetailsImpl implements UserDetails {
         if (user == null) {
             return Collections.emptySet();
         }
-        final Set<Role> roles = Role.toRoles(user.getRole());
-        final Set<GrantedAuthority> authorities = new HashSet<>();
-        for (final Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+        final Role role = user.getRole();
+        if (role == null) {
+            return Collections.emptySet();
         }
+
+        final Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
         return authorities;
     }
 

@@ -52,7 +52,7 @@ class TestUserServiceNegative {
         final long id = runId;
         final String username = clazzName + "-" + runId;
         final User user = userFactory.getUser(id, username, email, "pass-" + id, Role.ADMINISTRATOR, true);
-        user.setRole(System.currentTimeMillis()); // Setting invalid role
+        user.setRoleValue((byte) System.currentTimeMillis()); // Setting invalid role
         final Exception exception = assertThrows(Exception.class, () -> userService.create(user));
         assertNotNull(exception);
         assertEquals(ValidationException.class, exception.getClass());

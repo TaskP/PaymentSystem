@@ -1,6 +1,7 @@
 package com.example.payment.common.controller;
 
 import org.apache.commons.logging.Log;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,12 +38,17 @@ public class CommonControllerRest {
         if (e == null) {
             return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
         if (e instanceof ValidationException) {
+            return new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+        if (e instanceof DataIntegrityViolationException) {
             return new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         if (e instanceof EntityExistsException) {
             return new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
+        }
+        if (e instanceof EntityNotFoundException) {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
         if (e instanceof EntityNotFoundException) {
             return new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);

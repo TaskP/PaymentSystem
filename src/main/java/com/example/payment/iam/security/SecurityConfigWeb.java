@@ -38,7 +38,7 @@ public class SecurityConfigWeb {
                 .requestMatchers("/api/merchant**").hasAuthority(Role.MERCHANT.getRoleName())
                 .requestMatchers("/api/user**").hasAuthority(Role.ADMINISTRATOR.getRoleName())
                 .requestMatchers("/ui/merchant**").hasAuthority(Role.MERCHANT.getRoleName())
-                .requestMatchers("/ui/user/**").hasAuthority(Role.ADMINISTRATOR.getRoleName())
+                .requestMatchers("/ui/user**").hasAuthority(Role.ADMINISTRATOR.getRoleName())
                 .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())

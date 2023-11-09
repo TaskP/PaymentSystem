@@ -46,7 +46,7 @@ public class UserFactoryImpl implements UserFactory {
         if (user.getUsername() == null || user.getUsername().length() == 0) {
             return new ValidationException("Invalid Username");
         }
-        if (user.getRole() == 0) {
+        if (user.getRoleValue() == 0) {
             return new ValidationException("Invalid Role");
         }
         final Set<ConstraintViolation<User>> valResult = validator.validate(user);

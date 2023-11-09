@@ -2,14 +2,12 @@ package com.example.payment.merchant.service;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.payment.merchant.factory.TransactionFactory;
@@ -28,6 +26,7 @@ public class TransactionService {
     /**
      * Logger.
      */
+    @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(TransactionService.class);
 
     /**
@@ -89,14 +88,5 @@ public class TransactionService {
      */
     public void deleteById(final UUID id) {
         transactionRepository.deleteById(id);
-    }
-
-    @Scheduled(initialDelay = 30, fixedDelay = 900, timeUnit = TimeUnit.SECONDS)
-    public void cleanTransactions() {
-        try {
-            transactionRepository.deleteByEpochLessThanEqual(System.currentTimeMillis() - 3600_000);
-        } catch (final Throwable t) {
-            LOG.warn("CleanTransactions Error.", t);
-        }
     }
 }

@@ -116,7 +116,7 @@ public class UserService {
      * @param user
      * @return persisted user
      */
-    public User create(@Valid final User user) {
+    public User create(final User user) {
 
         final ValidationException vex = userFactory.validate(userFactory.setUserIdIfNeeded(user));
         if (vex != null) {
@@ -154,25 +154,31 @@ public class UserService {
         if (!ex.isPresent()) {
             throw new EntityNotFoundException("User not found! Id:" + user.getId());
         }
-        ex = findByUsername(user.getUsername());
-        if (ex.isPresent() && ex.get().getId() != user.getId()) {
-            throw new EntityExistsException("User exists! Username:" + user.getUsername());
-        }
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(ex.get().getPassword());
         }
         if (user.getPassword() != null && !user.getPassword().isEmpty() && !user.getPassword().equals(ex.get().getPassword())) {
             user.setPassword(userFactory.encodePassword(user.getPassword()));
         }
+
+        ex = findByUsername(user.getUsername());
+        if (ex.isPresent() && ex.get().getId() != user.getId()) {
+            throw new EntityExistsException("User exists! Username:" + user.getUsername());
+        }
         return formatOut(userRepository.save(user));
     }
 
     /**
-     * Deletes user by user id.
+     * Deletes user by user id. We do not check here for reference to merchant in
+     * order to avoid cross package reference
      *
      * @param id
      */
     public void deleteById(final long id) {
+        final Optional<User> ex = userRepository.findById(id);
+        if (!ex.isPresent()) {
+            throw new EntityNotFoundException("User not found! Id:" + id);
+        }
         userRepository.deleteById(id);
     }
 

@@ -1,7 +1,6 @@
 package com.example.payment.iam.service;
 
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,8 +40,8 @@ public final class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User (" + username + ") does not have password set");
         }
 
-        final Set<Role> roles = Role.toRoles(user.get().getRole());
-        if (roles.isEmpty()) {
+        final Role role = user.get().getRole();
+        if (role == null) {
             throw new UsernameNotFoundException("User (" + username + ") does not have any role assigned");
         }
         return new UserDetailsImpl(user.get());
