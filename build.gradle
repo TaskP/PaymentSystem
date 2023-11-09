@@ -13,10 +13,14 @@ apply plugin: "eclipse"
 apply plugin: 'org.siouan.frontend-jdk17'
 
 group = 'com.example'
-version = '1.0.2'
+version = '1.0.3'
 
 java {
 	sourceCompatibility = '17'
+}
+
+springBoot {
+    buildInfo()
 }
 
 tasks.named("jar") {

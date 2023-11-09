@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import com.example.payment.common.utils.IdUtils;
+import com.example.payment.iam.factory.UserFactory;
 import com.example.payment.iam.model.Role;
+import com.example.payment.iam.model.User;
+import com.example.payment.iam.model.UserDetailsImpl;
 
 /**
  * UserRESTController test cases. Happy path.
@@ -29,16 +32,32 @@ class TestUserControllerRESTHappy {
     private MockMvc mvc;
 
     /**
+     * UserFactory.
+     */
+    @Autowired
+    private UserFactory userFactory;
+
+    /**
      * Test list users.
      *
      * @throws Exception
      */
     @Test
     public void testListAll() throws Exception {
+        final long runId = IdUtils.idLong();
+        final String clazzName = getClass().getSimpleName();
+        final String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        final String fullName = methodName + "-" + runId + "@" + clazzName + ".test";
+
+        final long id = runId;
+        final String username = (clazzName + "-" + runId).toLowerCase();
+        final User user = userFactory.getUser(id, username, fullName, "pass-" + id, Role.ADMINISTRATOR, true);
+        final UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
         //@formatter:off
         mvc.perform(MockMvcRequestBuilders.get("/api/user").accept(MediaType.APPLICATION_JSON)
-                .with(user(getClass().getSimpleName()).password(getClass().getSimpleName())
-                .authorities(new SimpleGrantedAuthority(Role.ADMINISTRATOR.getRoleName()))))
+                .with(user(userDetails)))
                 .andDo(print())
                 .andExpect(status().isOk());
         //@formatter:on

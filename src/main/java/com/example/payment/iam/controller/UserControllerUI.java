@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.example.payment.common.controller.CommonControllerUI;
 import com.example.payment.iam.factory.UserFactory;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
@@ -30,7 +31,7 @@ import com.example.payment.iam.service.UserService;
  */
 @Controller
 @RequestMapping("/ui/user")
-public class UserControllerUI extends CommonControllerUI {
+public class UserControllerUI extends CommonIamControllerUI {
 
     /**
      * Logger.
@@ -55,7 +56,13 @@ public class UserControllerUI extends CommonControllerUI {
     }
 
     @GetMapping(path = { "/", "/list.html" })
-    public Object list(@RequestParam(defaultValue = "1") final int page, final User user, final BindingResult result, final Model model) {
+    public Object list(@RequestParam(defaultValue = "1") final int page, final User user, final BindingResult result, final Model model,
+            @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object admin = getAdministrator("List", userDetails);
+        if ((admin instanceof ModelAndView)) {
+            return admin;
+        }
+
         final String name;
         if (user == null || user.getUsername() == null) {
             name = "";
@@ -66,7 +73,7 @@ public class UserControllerUI extends CommonControllerUI {
             final Page<User> results = listPaginated(page, name);
             return addPaginationModel(page, results, model);
         } catch (final Exception e) {
-            return error("List failed", e);
+            return error("List failed", e, userDetails);
         }
     }
 
@@ -86,23 +93,38 @@ public class UserControllerUI extends CommonControllerUI {
     }
 
     @GetMapping("/create")
-    public String initCreate(final Map<String, Object> model) {
+    public Object initCreate(final Map<String, Object> model, @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object admin = getAdministrator("InitCreate", userDetails);
+        if ((admin instanceof ModelAndView)) {
+            return admin;
+        }
+
         model.put("user", userFactory.getUser());
         return "user/edit";
     }
 
     @PostMapping("/create")
-    public Object processCreate(final User user) {
+    public Object processCreate(final User user, @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object admin = getAdministrator("ProcessCreate", userDetails);
+        if ((admin instanceof ModelAndView)) {
+            return admin;
+        }
+
         try {
             this.userService.create(user);
             return "redirect:/ui/user/list.html";
         } catch (final Exception e) {
-            return error("Create Failed", e);
+            return error("Create Failed", e, userDetails);
         }
     }
 
     @GetMapping("/{userId}")
-    public ModelAndView show(@PathVariable("userId") final long userId) {
+    public ModelAndView show(@PathVariable("userId") final long userId, @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object admin = getAdministrator("Show", userDetails);
+        if ((admin instanceof ModelAndView)) {
+            return (ModelAndView) admin;
+        }
+
         try {
             final Optional<User> user = this.userService.findById(userId);
             if (user.isPresent()) {
@@ -111,35 +133,40 @@ public class UserControllerUI extends CommonControllerUI {
                 return mav;
             }
         } catch (final Exception e) {
-            return error("Show Failed", e);
+            return error("Show Failed", e, userDetails);
         }
-        return error("User not found");
+        return error("User not found", userDetails);
     }
 
     @PostMapping("/{userId}")
-    public Object post(@RequestParam final String action, @PathVariable("userId") final long userId, final User user) {
-        if ("delete".equalsIgnoreCase(action)) {
-            return delete(userId);
+    public Object post(@RequestParam final String action, @PathVariable("userId") final long userId, final User user,
+            @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object admin = getAdministrator("Post", userDetails);
+        if ((admin instanceof ModelAndView)) {
+            return admin;
         }
-        return update(user, userId);
+        if ("delete".equalsIgnoreCase(action)) {
+            return delete(userId, userDetails);
+        }
+        return update(user, userId, userDetails);
     }
 
-    private Object update(final User user, @PathVariable("userId") final long userId) {
+    private Object update(final User user, final long userId, final UserDetails userDetails) {
         user.setId(userId);
         try {
             this.userService.update(user);
             return "redirect:/ui/user/list.html";
         } catch (final Exception e) {
-            return error("Update Failed", e);
+            return error("Update Failed", e, userDetails);
         }
     }
 
-    private Object delete(@PathVariable("userId") final long userId) {
+    private Object delete(final long userId, final UserDetails userDetails) {
         try {
             this.userService.deleteById(userId);
             return "redirect:/ui/user/list.html";
         } catch (final Exception e) {
-            return error("Delete Failed", e);
+            return error("Delete Failed", e, userDetails);
         }
     }
 }

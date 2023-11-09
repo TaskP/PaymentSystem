@@ -307,19 +307,19 @@ Tests are located in the ```test``` directory with package definitions matching 
 	```
 	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/users?username=root
 	```
-	2.3. Create user. If id is not set then a new one is set internally. Method POST. On success returns an HTTP 201 (Created), on duplicate user then returns HTTP 409 Conflict  
+	2.3. Create user. If id is not set then a new one is set internally. Method POST. On success returns an HTTP 201 (Created), on duplicate user returns HTTP 409 Conflict. On invalid data returns HTTP 400.  
 	```
 	curl -k -v -X POST --user ${ADMIN_AUTH} ${TASK_URL}/api/users \
--H 'Content-Type: application/json' \
--d '{"id":1698709109326709,"username":"CurlTest","fullName":"Merchant","password":"merchant!@#","role":6,"status":true}'
-    ```
-    2.4. Update user. Method PUT. On success returns an HTTP 200 (OK) status code. On user not found returns HTTP 404 Not found. On duplicate user error returns HTTP 409 Conflict  
+	-H 'Content-Type: application/json' \
+	-d '{"id":1698709109326709,"username":"CurlTest","fullName":"Merchant","password":"merchant!@#","role":1,"status":true}'
+    ```  
+    2.4. Update user. Method PUT. On success returns an HTTP 200 (OK) status code. On user not found returns HTTP 404 Not found. On duplicate user error returns HTTP 409 Conflict. On invalid data returns HTTP 400.    
     ```
 	curl -k -v -X PUT --user ${ADMIN_AUTH} ${TASK_URL}/api/users/1698709109326709 \
 	-H 'Content-Type: application/json' \
-	-d '{"id":1698709109326709,"username":"CurlTestUpdate","fullName":"Merchant Update","password":null,"role":4,"status":true}'
+	-d '{"id":1698709109326709,"username":"CurlTestUpdate","fullName":"Merchant Update","password":null,"roleName":"Merchant","status":true}'
     ```
-	2.5. Delete user by user id. Method: DELETE. On success returns an HTTP 204 (NO CONTENT) status code. On user not found returns HTTP 404 Not found.  On user in user(constraint violation) returns HTTP 400 Bad request
+	2.5. Delete user by user id. Method: DELETE. On success returns an HTTP 204 (NO CONTENT) status code. On user not found returns HTTP 404 Not found.  On user that is referenced by merchant(constraint violation) returns HTTP 400 Bad request
     ```
     curl -k -v -X DELETE --user ${ADMIN_AUTH} ${TASK_URL}/api/users/1698709109326709
     ```

@@ -141,6 +141,14 @@ public final class User implements Serializable {
         return this;
     }
 
+    public User setRole(final int roleValueIn) {
+        return setRole(Role.parse((byte) roleValueIn));
+    }
+
+    public User setRoleName(final String roleName) {
+        return setRole(Role.parse(roleName));
+    }
+
     /**
      *
      * @return status

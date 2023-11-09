@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.example.payment.iam.model.Role;
@@ -32,21 +31,19 @@ public class SecurityConfigWeb {
     @Bean
     SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         // @formatter:off
-
         http.authorizeHttpRequests(
                 (authorize) -> authorize
-                .requestMatchers("/api/merchant**").hasAuthority(Role.MERCHANT.getRoleName())
                 .requestMatchers("/api/user**").hasAuthority(Role.ADMINISTRATOR.getRoleName())
-                .requestMatchers("/ui/merchant**").hasAuthority(Role.MERCHANT.getRoleName())
                 .requestMatchers("/ui/user**").hasAuthority(Role.ADMINISTRATOR.getRoleName())
+                .requestMatchers("/api/merchant**").hasAuthority(Role.MERCHANT.getRoleName())
+                .requestMatchers("/ui/merchant**").hasAuthority(Role.MERCHANT.getRoleName())
                 .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable);
+                //.csrf(AbstractHttpConfigurer::disable)
+                .csrf((csrf) -> csrf.ignoringRequestMatchers("/api/**"));
 
-                //.csrf((csrf) -> csrf.ignoringRequestMatchers("/api/*"))
-                //;
         /*
         http.authorizeHttpRequests(
                 (authorize) -> authorize

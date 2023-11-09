@@ -7,6 +7,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.payment.common.controller.CommonControllerRest;
-import com.example.payment.common.utils.StringUtils;
 import com.example.payment.iam.model.User;
 import com.example.payment.iam.service.UserService;
 
@@ -30,7 +30,7 @@ import com.example.payment.iam.service.UserService;
 
 @RestController
 @RequestMapping
-public class UserControllerREST extends CommonControllerRest {
+public class UserControllerREST extends CommonIamControllerREST {
 
     /**
      * Logger.
@@ -52,7 +52,8 @@ public class UserControllerREST extends CommonControllerRest {
      * @return collection of all entities from UserService
      */
     @GetMapping(path = { "/api/user" })
-    public List<User> findAll() {
+    public List<User> findAll(@AuthenticationPrincipal final UserDetails userDetails) {
+        getAdministrator("FindAll", userDetails);
         try {
             return userService.findAll();
         } catch (final Exception e) {
@@ -68,10 +69,10 @@ public class UserControllerREST extends CommonControllerRest {
      * @return Object - Optional<User> or List<User>
      */
     @GetMapping("/api/users")
-    public Object findByUsername(@RequestParam(required = false, name = "username") final String username) {
-        if (StringUtils.isEmpty(username)) {
-            return findAll();
-        }
+    public Object findByUsername(@RequestParam(required = false, name = "username") final String username,
+            @AuthenticationPrincipal final UserDetails userDetails) {
+        getAdministrator("FindByUsername", userDetails);
+
         try {
             return userService.findByUsername(username);
         } catch (final Exception e) {
@@ -86,7 +87,8 @@ public class UserControllerREST extends CommonControllerRest {
      * @return Optional<User>
      */
     @GetMapping(path = { "/api/user/{id}", "/api/users/{id}" })
-    public Optional<User> findById(@PathVariable final long id) {
+    public Optional<User> findById(@PathVariable final long id, @AuthenticationPrincipal final UserDetails userDetails) {
+        getAdministrator("GetById", userDetails);
         try {
             return userService.findById(id);
         } catch (final Exception e) {
@@ -103,7 +105,8 @@ public class UserControllerREST extends CommonControllerRest {
      */
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PostMapping(path = { "/api/user", "/api/users" })
-    public User create(@RequestBody final User user) {
+    public User create(@RequestBody final User user, @AuthenticationPrincipal final UserDetails userDetails) {
+        getAdministrator("Create", userDetails);
         try {
             return userService.create(user);
         } catch (final Exception e) {
@@ -121,7 +124,8 @@ public class UserControllerREST extends CommonControllerRest {
      */
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(path = { "/api/users/{id}", "/api/users/{id}" })
-    public User update(@PathVariable final long id, @RequestBody final User user) {
+    public User update(@PathVariable final long id, @RequestBody final User user, @AuthenticationPrincipal final UserDetails userDetails) {
+        getAdministrator("Update", userDetails);
         try {
             user.setId(id);
             return userService.update(user);
@@ -139,8 +143,8 @@ public class UserControllerREST extends CommonControllerRest {
      */
     @ResponseStatus(HttpStatus.NO_CONTENT) // 204
     @DeleteMapping(path = { "/api/user/{id}", "/api/users/{id}" })
-    public void deleteById(@PathVariable final long id) {
-        getLog().warn("Delete:" + id);
+    public void deleteById(@PathVariable final long id, @AuthenticationPrincipal final UserDetails userDetails) {
+        getAdministrator("Delete", userDetails);
         try {
             userService.deleteById(id);
         } catch (final Exception e) {

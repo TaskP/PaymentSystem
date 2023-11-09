@@ -76,6 +76,22 @@
 	background-color: var(--color-blue-grey-light);
 }
 
+.ps-navbar-nav .btn-primary{
+	color: white;
+	text-decoration: none;
+	background: var(--color-blue-main);
+  	border-color: var(--color-blue-grey-light);	
+  	float: left;
+  	margin-left: 20px;
+  	margin-top: 20px;
+  	margin-bottom: 10px;
+}
+
+.ps-navbar-nav .btn-primary:hover{
+	color: white;
+	background: var(--color-blue-main-hover);
+}
+
 .ps-page a{
 	color: var(--color-blue-main);
   	text-decoration: none;

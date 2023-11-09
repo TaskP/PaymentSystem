@@ -5,11 +5,11 @@ package com.example.payment.iam.model;
  */
 public enum Role {
     /**
-     * Administrator Role. Bit position 1. Value 2.
+     * Administrator Role.
      */
     ADMINISTRATOR(1, "Administrator"),
     /**
-     * Merchant Role. Bit position 2. Value 4.
+     * Merchant Role.
      */
     MERCHANT(2, "Merchant");
 
@@ -62,13 +62,13 @@ public enum Role {
      * @param bitPos
      * @return Role if found
      */
-    public static Role parse(final Byte bitPos) {
-        if (bitPos == null) {
+    public static Role parse(final Byte value) {
+        if (value == null) {
             return null;
         }
 
         for (final Role item : getValues()) {
-            if (item.getValue() == bitPos) {
+            if (item.getValue() == value) {
                 return item;
             }
         }

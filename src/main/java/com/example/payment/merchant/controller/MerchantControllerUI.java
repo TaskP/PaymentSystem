@@ -1,5 +1,6 @@
 package com.example.payment.merchant.controller;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.example.payment.common.controller.CommonControllerUI;
 import com.example.payment.merchant.factory.MerchantFactory;
 import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.service.MerchantService;
@@ -30,7 +32,7 @@ import com.example.payment.merchant.service.MerchantService;
  */
 @Controller
 @RequestMapping("/ui/merchant/merchant")
-public class MerchantControllerUI extends CommonControllerUI {
+public class MerchantControllerUI extends CommonMerchantControllerUI {
 
     /**
      * Logger.
@@ -55,7 +57,12 @@ public class MerchantControllerUI extends CommonControllerUI {
     }
 
     @GetMapping(path = { "/", "/list.html" })
-    public Object list(@RequestParam(defaultValue = "1") final int page, final Merchant merchant, final BindingResult result, final Model model) {
+    public Object list(@RequestParam(defaultValue = "1") final int page, final Merchant merchant, final BindingResult result, final Model model,
+            @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object user = getMerchantOrUser("List", userDetails);
+        if ((user instanceof ModelAndView)) {
+            return user;
+        }
         final String name;
         if (merchant == null || merchant.getName() == null) {
             name = "";
@@ -63,10 +70,23 @@ public class MerchantControllerUI extends CommonControllerUI {
             name = merchant.getName();
         }
         try {
+            if (user instanceof Merchant) {
+                final Optional<Merchant> merchantEx = this.merchantService.findById(((Merchant) user).getId());
+                if (!merchantEx.isPresent()) {
+                    return error("Merchant not found", userDetails);
+                }
+                final List<Merchant> listMerchants = new LinkedList<Merchant>();
+                listMerchants.add(merchantEx.get());
+                model.addAttribute("currentPage", 1);
+                model.addAttribute("totalPages", 1);
+                model.addAttribute("totalItems", 1);
+                model.addAttribute("listMerchants", listMerchants);
+                return "merchant/merchant/list";
+            }
             final Page<Merchant> results = listPaginated(page, name);
             return addPaginationModel(page, results, model);
         } catch (final Exception e) {
-            return error("List failed!", e);
+            return error("List failed!", e, userDetails);
         }
     }
 
@@ -86,14 +106,23 @@ public class MerchantControllerUI extends CommonControllerUI {
     }
 
     @GetMapping("/{merchantId}")
-    public ModelAndView show(@PathVariable("merchantId") final long merchantId) {
-        final Optional<Merchant> user = this.merchantService.findById(merchantId);
-        if (user.isPresent()) {
-            final ModelAndView mav = new ModelAndView("merchant/merchant/edit");
-            mav.addObject(user.get());
-            return mav;
+    public ModelAndView show(@PathVariable("merchantId") final long merchantId, @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object user = getMerchantOrUser("Show", userDetails);
+        if ((user instanceof ModelAndView)) {
+            return (ModelAndView) user;
         }
-        return error("Merchant not found");
+        if (user instanceof Merchant && ((Merchant) user).getId() != merchantId) {
+            return error("Merchant id differ", userDetails);
+        }
+
+        final Optional<Merchant> merchant = this.merchantService.findById(merchantId);
+        if (!merchant.isPresent()) {
+            return error("Merchant not found", userDetails);
+        }
+
+        final ModelAndView mav = new ModelAndView("merchant/merchant/edit");
+        mav.addObject(merchant.get());
+        return mav;
     }
 
     @GetMapping("/create")
@@ -103,39 +132,54 @@ public class MerchantControllerUI extends CommonControllerUI {
     }
 
     @PostMapping("/create")
-    public Object processCreate(final Merchant merchant) {
+    public Object processCreate(final Merchant merchant, @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object user = getMerchantOrUser("Create", userDetails);
+        if ((user instanceof ModelAndView)) {
+            return user;
+        }
+        if (user instanceof Merchant) {
+            return error("Merchant create not allowed", userDetails);
+        }
         try {
             this.merchantService.create(merchant);
             return "redirect:/ui/merchant/merchant/list.html";
         } catch (final Exception e) {
-            return error("Create failed", e);
+            return error("Create failed", e, userDetails);
         }
     }
 
     @PostMapping("/{merchantId}")
-    public Object post(@RequestParam final String action, @PathVariable("merchantId") final long merchantId, final Merchant merchant) {
-        if ("delete".equalsIgnoreCase(action)) {
-            return delete(merchantId);
+    public Object post(@RequestParam final String action, @PathVariable("merchantId") final long merchantId, final Merchant merchant,
+            @AuthenticationPrincipal final UserDetails userDetails) {
+        final Object user = getMerchantOrUser("Post", userDetails);
+        if ((user instanceof ModelAndView)) {
+            return user;
         }
-        return update(merchant, merchantId);
+        if (user instanceof Merchant && ((Merchant) user).getId() != merchantId) {
+            return error("Merchant id differ", userDetails);
+        }
+        if ("delete".equalsIgnoreCase(action)) {
+            return delete(merchantId, userDetails);
+        }
+        return update(merchant, merchantId, userDetails);
     }
 
-    private Object update(final Merchant merchant, @PathVariable("merchantId") final long merchantId) {
+    private Object update(final Merchant merchant, @PathVariable("merchantId") final long merchantId, final UserDetails userDetails) {
         merchant.setId(merchantId);
         try {
             this.merchantService.update(merchant);
             return "redirect:/ui/merchant/merchant/list.html";
         } catch (final Exception e) {
-            return error("Update failed", e);
+            return error("Update failed", e, userDetails);
         }
     }
 
-    private Object delete(@PathVariable("merchantId") final long merchantId) {
+    private Object delete(@PathVariable("merchantId") final long merchantId, final UserDetails userDetails) {
         try {
             this.merchantService.deleteById(merchantId);
             return "redirect:/ui/merchant/merchant/list.html";
         } catch (final Exception e) {
-            return error("Delete failed", e);
+            return error("Delete failed", e, userDetails);
         }
     }
 }

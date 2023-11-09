@@ -7,14 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.payment.common.controller.CommonControllerRest;
+import com.example.payment.iam.controller.CommonIamControllerREST;
 import com.example.payment.iam.model.Role;
 import com.example.payment.iam.model.User;
-import com.example.payment.iam.model.UserDetailsImpl;
 import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.service.MerchantService;
 
-public class CommonMerchantControllerREST extends CommonControllerRest {
+public class CommonMerchantControllerREST extends CommonIamControllerREST {
 
     /**
      * MerchantService.
@@ -27,19 +26,7 @@ public class CommonMerchantControllerREST extends CommonControllerRest {
     }
 
     protected Merchant getMerchant(final String caller, final UserDetails userDetails) throws ResponseStatusException {
-        if (userDetails == null) {
-            if (getLog() != null) {
-                getLog().warn(caller + " missing UserDetails");
-            }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
-        if (!(userDetails instanceof UserDetailsImpl)) {
-            if (getLog() != null) {
-                getLog().warn(caller + " wrong UserDetails");
-            }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
-        final User user = ((UserDetailsImpl) userDetails).getUser();
+        final User user = getUser(caller, userDetails);
         if (Role.MERCHANT.getValue() != user.getRoleValue()) {
             if (getLog() != null) {
                 getLog().warn(caller + " User does not have Role Merchant. UserId:" + user.getId());
