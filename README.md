@@ -302,7 +302,8 @@ Tests are located in the ```test``` directory with package definitions matching 
 	or  
 	```
 	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/users  
-	```n	2.2. Find User by username. If username is null or empty then lists all users. Method GET.  	
+	```
+	2.2. Find User by username. If username is null or empty then lists all users. Method GET.  	
 	```
 	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/users?username=root
 	```
