@@ -30,6 +30,10 @@ public final class TransactionRefund extends Transaction {
         }
     }
 
+    public TransactionRefund() {
+        super(TransactionType.REFUND);
+    }
+
     @Override
     public TransactionType getType() {
         return TransactionType.REFUND;

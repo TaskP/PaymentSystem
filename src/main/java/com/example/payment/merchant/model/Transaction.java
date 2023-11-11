@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
@@ -28,10 +29,6 @@ import jakarta.validation.constraints.Size;
 @DiscriminatorValue(value = "Z")
 @Table(name = "transaction")
 public class Transaction implements Serializable {
-
-    public TransactionType getType() {
-        return TransactionType.UKNOWN;
-    }
 
     private static final long serialVersionUID = 1L;
 
@@ -107,6 +104,27 @@ public class Transaction implements Serializable {
      */
     @Column(name = "epoch", nullable = false)
     private long epoch = System.currentTimeMillis();
+
+    /**
+     * TransactionType.
+     */
+    @Transient
+    @TransactionTypeValidation
+    private transient byte typeValue;
+
+    public Transaction() {
+        super();
+    }
+
+    public Transaction(final int typeValue) {
+        this();
+        setTypeValue(typeValue);
+    }
+
+    public Transaction(final TransactionType type) {
+        this();
+        setType(type);
+    }
 
     /**
      *
@@ -297,6 +315,30 @@ public class Transaction implements Serializable {
      */
     public void setEpoch(final long epochIn) {
         this.epoch = epochIn;
+    }
+
+    public byte getTypeValue() {
+        return typeValue;
+    }
+
+    public TransactionType getType() {
+        return TransactionType.parse(getTypeValue());
+    }
+
+    public Transaction setType(final TransactionType type) {
+        if (type == null) {
+            return setTypeValue((byte) 0);
+        }
+        return setTypeValue(type.getTypeId());
+    }
+
+    public Transaction setTypeValue(final int typeValueIn) {
+        this.typeValue = (byte) typeValueIn;
+        return this;
+    }
+
+    public Transaction setType(final String typeName) {
+        return setType(TransactionType.parse(typeName));
     }
 
     @Override

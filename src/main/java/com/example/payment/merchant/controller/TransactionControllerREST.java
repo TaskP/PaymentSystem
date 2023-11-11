@@ -28,8 +28,6 @@ import com.example.payment.merchant.model.Merchant;
 import com.example.payment.merchant.model.Transaction;
 import com.example.payment.merchant.service.TransactionService;
 
-import jakarta.validation.Valid;
-
 /**
  * RESTful controller responsible for managing transaction-related operations
  * through HTTP end points.
@@ -59,6 +57,31 @@ public class TransactionControllerREST extends CommonMerchantControllerREST {
     @Override
     protected Log getLog() {
         return LOG;
+    }
+
+    protected Transaction formatOut(final Transaction transaction) {
+        if (transaction != null) {
+            final long merchantId = transaction.getMerchantId();
+            transaction.setMerchant(null);
+            transaction.setMerchantId(merchantId);
+        }
+        return transaction;
+    }
+
+    protected Optional<Transaction> formatOut(final Optional<Transaction> optTransaction) {
+        if (optTransaction != null && optTransaction.isPresent()) {
+            formatOut(optTransaction.get());
+        }
+        return optTransaction;
+    }
+
+    protected List<Transaction> formatOut(final List<Transaction> list) {
+        if (list != null && list.size() > 0) {
+            for (final Transaction transaction : list) {
+                formatOut(transaction);
+            }
+        }
+        return list;
     }
 
     /**
@@ -99,7 +122,24 @@ public class TransactionControllerREST extends CommonMerchantControllerREST {
         if (ret.get().getMerchantId() != merchant.getId()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        return ret.get();
+        return formatOut(ret.get());
+    }
+
+    /**
+     * Creates Transaction. The 'type' field is used determine the type of
+     * transaction.
+     */
+    @ResponseStatus(HttpStatus.CREATED) // 201
+    @PostMapping
+    public Transaction createTransaction(@RequestBody final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
+        final Merchant merchant = getMerchant("CreateTransaction", userDetails);
+        transaction.setMerchant(merchant);
+        transactionFactory.setTransactionIdIfNeeded(transaction);
+        try {
+            return formatOut(transactionService.create(transactionFactory.getTransaction(transaction)));
+        } catch (final Exception e) {
+            throw error("CreateTransaction failed!", e);
+        }
     }
 
     /**
@@ -107,14 +147,14 @@ public class TransactionControllerREST extends CommonMerchantControllerREST {
      */
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PostMapping("/authorize")
-    public Transaction createTransactionAuthorize(@RequestBody @Valid final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
+    public Transaction createTransactionAuthorize(@RequestBody final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
         final Merchant merchant = getMerchant("CreateTransactionAuthorize", userDetails);
         transaction.setMerchant(merchant);
         transactionFactory.setTransactionIdIfNeeded(transaction);
         try {
-            return transactionService.create(transactionFactory.getTransactionAuthorize(transaction));
+            return formatOut(transactionService.create(transactionFactory.getTransactionAuthorize(transaction)));
         } catch (final Exception e) {
-            throw error("Create failed!", e);
+            throw error("CreateTransactionAuthorize failed!", e);
         }
     }
 
@@ -123,14 +163,14 @@ public class TransactionControllerREST extends CommonMerchantControllerREST {
      */
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PostMapping("/charge")
-    public Transaction createTransactionCharge(@RequestBody @Valid final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
+    public Transaction createTransactionCharge(@RequestBody final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
         final Merchant merchant = getMerchant("CreateTransactionCharge", userDetails);
         transaction.setMerchant(merchant);
         transactionFactory.setTransactionIdIfNeeded(transaction);
         try {
-            return transactionService.create(transactionFactory.getTransactionCharge(transaction));
+            return formatOut(transactionService.create(transactionFactory.getTransactionCharge(transaction)));
         } catch (final Exception e) {
-            throw error("Create failed!", e);
+            throw error("CreateTransactionCharge failed!", e);
         }
     }
 
@@ -139,14 +179,14 @@ public class TransactionControllerREST extends CommonMerchantControllerREST {
      */
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PostMapping("/refund")
-    public Transaction createTransactionRefund(@RequestBody @Valid final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
+    public Transaction createTransactionRefund(@RequestBody final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
         final Merchant merchant = getMerchant("CreateTransactionRefund", userDetails);
         transaction.setMerchant(merchant);
         transactionFactory.setTransactionIdIfNeeded(transaction);
         try {
-            return transactionService.create(transactionFactory.getTransactionRefund(transaction));
+            return formatOut(transactionService.create(transactionFactory.getTransactionRefund(transaction)));
         } catch (final Exception e) {
-            throw error("Create failed!", e);
+            throw error("CreateTransactionRefund failed!", e);
         }
     }
 
@@ -155,14 +195,14 @@ public class TransactionControllerREST extends CommonMerchantControllerREST {
      */
     @ResponseStatus(HttpStatus.CREATED) // 201
     @PostMapping("/reversal")
-    public Transaction createTransactionReversal(@RequestBody @Valid final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
+    public Transaction createTransactionReversal(@RequestBody final Transaction transaction, @AuthenticationPrincipal final UserDetails userDetails) {
         final Merchant merchant = getMerchant("CreateTransactionReversal", userDetails);
         transaction.setMerchant(merchant);
         transactionFactory.setTransactionIdIfNeeded(transaction);
         try {
-            return transactionService.create(transactionFactory.getTransactionReversal(transaction));
+            return formatOut(transactionService.create(transactionFactory.getTransactionReversal(transaction)));
         } catch (final Exception e) {
-            throw error("Create failed!", e);
+            throw error("CreateTransactionReversal failed!", e);
         }
     }
 

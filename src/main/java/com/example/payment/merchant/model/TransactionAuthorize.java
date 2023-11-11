@@ -26,6 +26,10 @@ public final class TransactionAuthorize extends Transaction {
         }
     }
 
+    public TransactionAuthorize() {
+        super(TransactionType.AUTORIZE);
+    }
+
     @Override
     public TransactionType getType() {
         return TransactionType.AUTORIZE;

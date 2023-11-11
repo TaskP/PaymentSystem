@@ -31,6 +31,10 @@ public final class TransactionCharge extends Transaction {
         }
     }
 
+    public TransactionCharge() {
+        super(TransactionType.CHARGE);
+    }
+
     @Override
     public TransactionType getType() {
         return TransactionType.CHARGE;

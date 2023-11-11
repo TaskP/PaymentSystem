@@ -13,7 +13,7 @@ apply plugin: "eclipse"
 apply plugin: 'org.siouan.frontend-jdk17'
 
 group = 'com.example'
-version = '1.0.3'
+version = '1.0.4'
 
 java {
 	sourceCompatibility = '17'

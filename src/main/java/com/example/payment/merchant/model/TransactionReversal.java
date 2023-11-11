@@ -30,6 +30,10 @@ public final class TransactionReversal extends Transaction {
         }
     }
 
+    public TransactionReversal() {
+        super(TransactionType.REVERSAL);
+    }
+
     @Override
     public TransactionType getType() {
         return TransactionType.REVERSAL;

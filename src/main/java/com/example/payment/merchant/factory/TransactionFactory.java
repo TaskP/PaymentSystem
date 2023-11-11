@@ -49,6 +49,21 @@ public interface TransactionFactory {
     Transaction getTransaction(TransactionType type, UUID uuid, Merchant merchant, Double amount, TransactionStatus status, String customerEmail,
             String customerPhone, Transaction referenceTransaction) throws ValidationException;
 
+    default Transaction getTransaction(final Transaction transaction) throws ValidationException {
+        switch (transaction.getType()) {
+        case AUTORIZE:
+            return getTransactionAuthorize(transaction);
+        case CHARGE:
+            return getTransactionCharge(transaction);
+        case REFUND:
+            return getTransactionRefund(transaction);
+        case REVERSAL:
+            return getTransactionReversal(transaction);
+        default:
+            throw new ValidationException("TransactionType not supported");
+        }
+    }
+
     /**
      * Build new TransactionAuthorize. Validate and throw exception if not valid.
      *
