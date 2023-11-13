@@ -1,0 +1,39 @@
+<html xmlns:th="https://www.thymeleaf.org"  th:replace="~{fragments/layout :: layout ('Edit user',~{::body},'user')}">
+<body>
+	<div class="xd-container ps-page">
+		<div class="container">
+		  <h2 class="ps-page-title">User</h2>
+		  <form th:object="${user}" class="form-horizontal" id="edit-user-form" method="post">
+		  	  <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		    <div>
+		      <input
+		        th:replace="~{fragments/inputField :: input ('Username', 'username', 'text')}" />
+		      <input
+		        th:replace="~{fragments/inputField :: input ('Password', 'password', 'text')}" />
+		      <input
+		        th:replace="~{fragments/inputField :: input ('Full name', 'fullName', 'text')}" />
+		      <input
+		        th:replace="~{fragments/inputField :: input ('Role', 'role', 'text')}" />
+		      <input
+		        th:replace="~{fragments/inputField :: input ('Status', 'statusActive', 'text')}" />
+		    </div>
+		    <div>
+				<div class="ps-form-edit">
+				      <div th:if="${#strings.isEmpty(user['username'])}">
+				        <button class="btn btn-primary" type="submit" name="action" value="Create">Create</button>
+				      </div>
+				      <div th:if="${not #strings.isEmpty(user['username'])}">
+				        <button class="btn btn-primary" type="submit" name="action" value="Update">Update</button>
+				      </div>
+				</div>
+				<div class="ps-form-delete">
+			      <div th:if="${not #strings.isEmpty(user['username'])}">
+					<button class="btn btn-primary" type="submit" name="action" value="Delete">Delete</button>
+				  </div>  
+				 </div>   
+		    </div>	    
+		  </form>	  
+		</div>
+	</div>
+</body>
+</html>

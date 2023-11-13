@@ -1,0 +1,44 @@
+<html xmlns:th="https://www.thymeleaf.org"  th:replace="~{fragments/layout :: layout ('Error',~{::body},'error')}">
+<body>
+	<div class="xd-container ps-page">
+		<div class="container">
+		    <h2 class="ps-error" th:if="${error != null}" th:text="${error}"/>
+		    <h2 class="ps-error" th:if="${error == null}">Error</h2>	    
+		    <div class="ps-error-details">
+				<div th:if="${applicationVersion != null}">
+		            <span><strong>Version:</strong></span>
+		            <span th:text="${applicationVersion}"></span>
+				</div> 
+		        <div th:if="${status != null}">
+		            <span><strong>Status</strong></span>
+		            <span th:text="${status}"></span>
+		        </div>
+		        <div th:if="${errno != null}">
+		            <span><strong>Errno: </strong></span>
+		            <span th:text="${errno}"></span>
+		        </div>
+		        <div th:if="${message != null}">
+		            <span><strong>Message: </strong></span>
+		            <span th:text="${message}"></span>
+		        </div>
+		        <div th:if="${reason != null}">
+		            <span><strong>Reason: </strong></span>
+		            <span th:text="${reason}"></span>
+		        </div>
+		        <div th:if="${exception != null}">
+		            <span><strong>Exception: </strong></span>
+		            <span th:text="${exception}"></span>
+		        </div>
+		        <div th:if="${trace != null}">
+		            <span><strong>Trace: </strong></span>
+		            <span th:text="${trace}"></span>
+		        </div>		
+		        <div th:if="${cause != null}">
+		            <span><strong>Cause: </strong></span>
+		            <span th:text="${cause}"></span>
+		        </div>	
+		    </div>
+		</div>
+    </div>
+</body>
+</html>

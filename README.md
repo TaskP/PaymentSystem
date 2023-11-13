@@ -5,12 +5,11 @@
     * [Submission](#submission)
 - [Implementation](#implementation)    
     * [Structure](#structure)
-    * [Configuration](#configuration)
+    * [Transaction Business Logic](#transaction-business-logic)
     * [Testing](#testing)
     * [Linter](#linter)
 - [Project setup](#project-setup)
 - [Database setup](#database-setup)
-- [Test setup](#test-setup)
 - [Check build](#check-build)
 - [Build Docker image](#build-docker-image)
 - [Load initial data](#load-initial-data)
@@ -102,17 +101,37 @@ Spring Boot Application with Hibernate JPA. Supports MySQL and PostgreSQL as a d
     * ```repository``` - data access of entities
     * ```security``` - only in ```iam```. Contains configuration and setup of PasswordEncoder and SecurityConfig
     * ```service``` - encapsulates the business logic  
-### Testing
+    
+### Transaction Business Logic  
+1. Orders for Tangible Products (Shippable Goods)  
+   1.1 - Authorize Transaction: Hold customer's amount when the order is created. Transaction status is pending.  
+   1.2 - Charge Transaction: Successfully or partially process the order and charge the full or partial amount of the held amount. Reference transaction is in '1.1'. Change the status of the referenced transaction to 'Approved' .  
+   1.3 - Refund Transaction: Customer returns the order, resulting in a refund of the amount collected in the Charge transaction. Reference transaction is in '1.2'. Change the status of the referenced transaction to 'Refunded' .  
+   1.4 - Reversal Transaction: Unable to process the order, resulting in the release of the held customer amount. Reference transaction is in '1.1'. Change the status of the referenced transaction to 'Reversed' .  
+
+2. Orders for Non-Tangible Products (e.g., Streaming  Services)  
+   2.1 - Charge Transaction: Charge the customer with the full amount.   
+   2.2 - Refund Transaction: Customer cancels the order, resulting in a refund of the amount collected in the Charge transaction. Reference transaction is in '2.1'. Change the status of the referenced transaction to 'Refunded' .  
+
+3. Data Cleansing - Transactions that do not reflect in the Merchant totalTransactionSum are eligible for deletion.  
+   3.1 - Authorize Transactions with a status pending for more than 1 week are deleted.  
+   3.2 - Reversal Transactions with referenced Authorize Transactions older than 1 month are deleted.  
+
+4. Atomic - Logic implementation must be atomic, which means that either all operation steps are done or none.       
+
+  * Distinction between the two scenarios is that the Charge Transaction either has or does not have a reference to the Authorize Transaction.
+
+### Testing  
 Tests are located in the ```test``` directory with package definitions matching those of the classes under test. There are two types of tests ```Happy``` and ```Negative``` and are separated in different testing classes.  
 
-## Linter
+### Linter
 [Checkstyle](https://checkstyle.org) is configured and used as a linting tool.  
 - Configuration is ```config/checkstyle/checkstyle.xml``` based on https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/sun_checks.xml with modified LineLength to 160 instead of 80.  
 - Suppressions are ```config/checkstyle/suppressions.xml```  
 - ```./gradlew checkStyleMain``` runs checks in main  
 - ```./gradlew checkStyleTest``` runs checks in test    
 
-## Project setup    
+### Project setup    
 1. Clone repository  
     ```
     git clone https://github.com/TaskP/PaymentSystem PaymentSystem
@@ -123,7 +142,7 @@ Tests are located in the ```test``` directory with package definitions matching 
     ./gradlew build -x test -x check
     ```
    
-## Database setup  
+### Database setup  
 1. MySQL or MariaDB    
     Create database, user and grant privileges to user. You can select a different DB name,Username, an password.  
     Connect to a running server with a user that has grant privileges and execute  
@@ -158,7 +177,7 @@ Tests are located in the ```test``` directory with package definitions matching 
     docker-compose --profile postgres up  
     ```
 
-## Check build	  
+### Check build	  
 1. Set database connection properties as environment variables
 	```
 	export TASKP_DB_URL='jdbc:mysql://127.0.0.1:3306/taskpdb'
@@ -169,7 +188,7 @@ Tests are located in the ```test``` directory with package definitions matching 
 	./gradlew check
 	``` 
     
-## Build Docker image
+### Build Docker image
 1. Build project 	
 	```
 	./gradlew build
@@ -183,7 +202,7 @@ Tests are located in the ```test``` directory with package definitions matching 
 	docker-compose --profile taskp build
 	``` 
 	
-## Load initial data      
+### Load initial data      
 1. Format  
 	1.1. Users    
 	Format: Column 1 - Username, Column 2 - Full name, Column 3 - Password, Column 4 - Role, Column 5 (Optional) - Status  
@@ -219,7 +238,7 @@ Tests are located in the ```test``` directory with package definitions matching 
     ```
     docker run -it --rm --entrypoint /opt/taskp/import.sh taskp:latest
     ```
-## Start local  
+### Start local  
 1. Via gradle  
 	```
 	./gradlew bootRun
@@ -241,7 +260,7 @@ Tests are located in the ```test``` directory with package definitions matching 
 	```
 	docker-compose --profile taskp up
 	```
-## Deploy to remote host  
+### Deploy to remote host  
 1. Prepare remote linux host  
 2. Install docker and docker-compose and start docker   
 3. Create virtual interface add assign ip  
@@ -287,7 +306,7 @@ Tests are located in the ```test``` directory with package definitions matching 
 	docker exec -it taskp /opt/taskp/import.sh	
 	```
 	
-## API 	  
+### API 	  
 1. Prepare environment. Export variables url, username and password with administrator role and merchant username and password  
 	```
 	export TASK_URL="http://127.0.0.1:8080"
@@ -297,29 +316,83 @@ Tests are located in the ```test``` directory with package definitions matching 
 2. Users - supports both urls "/api/user" and "/api/users"  
 	2.1. List users. Method GET.  
 	```
-	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/user
+	curl -k --user ${ADMIN_AUTH} ${TASK_URL}/api/user
 	```
 	or  
 	```
-	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/users  
+	curl -k --user ${ADMIN_AUTH} ${TASK_URL}/api/users  
 	```
 	2.2. Find User by username. If username is null or empty then lists all users. Method GET.  	
 	```
-	curl -k -v --user ${ADMIN_AUTH} ${TASK_URL}/api/users?username=root
+	curl -k --user ${ADMIN_AUTH} ${TASK_URL}/api/users?username=root
 	```
 	2.3. Create user. If id is not set then a new one is set internally. Method POST. On success returns an HTTP 201 (Created), on duplicate user returns HTTP 409 Conflict. On invalid data returns HTTP 400.  
 	```
-	curl -k -v -X POST --user ${ADMIN_AUTH} ${TASK_URL}/api/users \
+	curl -k -X POST --user ${ADMIN_AUTH} ${TASK_URL}/api/users \
 	-H 'Content-Type: application/json' \
 	-d '{"id":1698709109326709,"username":"CurlTest","fullName":"Merchant","password":"merchant!@#","role":1,"status":true}'
     ```  
     2.4. Update user. Method PUT. On success returns an HTTP 200 (OK) status code. On user not found returns HTTP 404 Not found. On duplicate user error returns HTTP 409 Conflict. On invalid data returns HTTP 400.    
     ```
-	curl -k -v -X PUT --user ${ADMIN_AUTH} ${TASK_URL}/api/users/1698709109326709 \
+	curl -k -X PUT --user ${ADMIN_AUTH} ${TASK_URL}/api/users/1698709109326709 \
 	-H 'Content-Type: application/json' \
 	-d '{"id":1698709109326709,"username":"CurlTestUpdate","fullName":"Merchant Update","password":null,"roleName":"Merchant","status":true}'
     ```
 	2.5. Delete user by user id. Method: DELETE. On success returns an HTTP 204 (NO CONTENT) status code. On user not found returns HTTP 404 Not found.  On user that is referenced by merchant(constraint violation) returns HTTP 400 Bad request
     ```
-    curl -k -v -X DELETE --user ${ADMIN_AUTH} ${TASK_URL}/api/users/1698709109326709
+    curl -k -X DELETE --user ${ADMIN_AUTH} ${TASK_URL}/api/users/1698709109326709
     ```
+ 3. Transactions  
+    3.1. List transactions for the authorized merchant. In pages. Page size is 10.  
+    ```
+    curl -k --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction?page=1
+    ```
+    3.2. Create Authorize
+    ```
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Authorize","amount":10,"customerEmail":"customer@example.com"}'
+    ```
+    3.2. Create Authorize and Reverse
+    ```
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Authorize","uuid":"aaaaaaaa-0000-0000-0000-000000000001","amount":10,"customerEmail":"customer@example.com"}'
+    
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Reversal","referenceId":"aaaaaaaa-0000-0000-0000-000000000001"}'
+    ```
+    
+    3.3. Create Charge  
+    3.3.1. Non-tangible Charge
+    ```
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Charge","amount":11,"customerEmail":"customer@example.com"}'    
+    ```
+    3.3.2. Tangible Charge  
+    ```
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Authorize","uuid":"cccccccc-0000-0000-0000-000000000001","amount":10,"customerEmail":"acme-customer@example.com","customerPhone":"+1 206 555 0100"}'
+
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Charge","amount":10,"referenceId":"cccccccc-0000-0000-0000-000000000001"}'
+    ```
+    3.3.3. Tangible Charge with Refund  
+    ```
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Authorize","uuid":"cccccccc-0000-0000-0005-000000000001","amount":10,"customerEmail":"acme-customer@example.com","customerPhone":"+1 206 555 0100"}'
+
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Charge","uuid":"cccccccc-0000-0000-0005-000000000002","amount":10,"referenceId":"cccccccc-0000-0000-0005-000000000001"}'
+    
+    curl -k -X POST --user ${MERCHANT_AUTH} ${TASK_URL}/api/merchant/transaction \
+    -H 'Content-Type: application/json' \
+    -d '{"type":"Refund","uuid":"cccccccc-0000-0000-0005-000000000003","amount":10,"referenceId":"cccccccc-0000-0000-0005-000000000002"}'
+    ```
+   
