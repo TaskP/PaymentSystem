@@ -138,8 +138,8 @@ public class TransactionControllerREST extends CommonMerchantControllerREST {
         final Merchant merchant = getMerchant("CreateTransaction", userDetails);
         transaction.setMerchant(merchant);
         transactionFactory.setTransactionIdIfNeeded(transaction);
-        transactionFactory.validate(transaction);
         try {
+            transactionFactory.validate(transaction);
             final Transaction ret = formatOut(transactionService.create(transactionFactory.getTransaction(transaction)));
             //getLog().warn("[CreateTransaction] TransactionRet:" + transaction);
             return new ResponseEntity<Object>(ret, new HttpHeaders(), HttpStatus.CREATED);
